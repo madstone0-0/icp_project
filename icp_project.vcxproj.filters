@@ -23,8 +23,25 @@
     <ClInclude Include="MainForm.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Database.h">
+    <ClInclude Include="db\Database.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="services\LoginService.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="utils.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="resource.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="AdminSignupForm.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="icp_project.rc">
+      <Filter>Resource Files</Filter>
+    </ResourceCompile>
   </ItemGroup>
 </Project>

@@ -1,12 +1,16 @@
 #pragma once
-#include "Database.h"
+#include <iostream>
+
+#include "db/Database.h"
+#include "services/LoginService.h"
 
 namespace icpproject {
-
+    using namespace std;
     using namespace System;
     using namespace System::ComponentModel;
     using namespace System::Collections;
     using namespace System::Windows::Forms;
+    using namespace System::Collections::Generic;
     using namespace System::Data;
     using namespace System::Drawing;
 

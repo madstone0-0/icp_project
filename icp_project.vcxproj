@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
@@ -128,15 +128,27 @@
     <ClCompile Include="MainForm.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Database.h" />
+    <ClInclude Include="db\Database.h" />
     <ClInclude Include="MainForm.h">
       <FileType>CppForm</FileType>
     </ClInclude>
+    <ClInclude Include="resource.h" />
+    <ClInclude Include="services\LoginService.h" />
+    <ClInclude Include="AdminSignupForm.h">
+      <FileType>CppForm</FileType>
+    </ClInclude>
+    <ClInclude Include="utils.h" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="MainForm.resx">
       <DependentUpon>MainForm.h</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="AdminSignupForm.resx">
+      <DependentUpon>AdminSignupForm.h</DependentUpon>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="icp_project.rc" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

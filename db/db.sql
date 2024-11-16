@@ -5,7 +5,7 @@ create database records;
 use records;
 
 create table user (
-  uid varchar(8) primary key,
+  uid int auto_increment primary key,
   fname varchar(50) not null,
   lname varchar(50) not null,
   email varchar(100) not null,
@@ -13,12 +13,12 @@ create table user (
 );
 
 create table admin (
-  uid varchar(8) primary key,
+  uid int primary key,
   foreign key (uid) references user (uid)
 );
 
 create table student (
-  uid varchar(8) primary key,
+  uid int primary key,
   dob date not null,
   picture longblob,
   major enum ('CS', 'BA', 'EN', 'ME', 'EE', 'CE', 'MA') not null,
@@ -27,7 +27,7 @@ create table student (
 );
 
 create table faculty (
-  uid varchar(8) primary key,
+  uid int primary key,
   appDate date not null default (current_date()),
   dept enum ("CS", "HM", "EN", "BA") not null,
   foreign key (uid) references user (uid)
@@ -41,7 +41,7 @@ create table course (
 );
 
 create table course_faculty (
-  uid varchar(8) not null,
+  uid int not null,
   cid int not null,
   primary key (uid, cid),
   foreign key (uid) references faculty (uid), -- Ensuring only faculty are linked to courses
@@ -50,7 +50,7 @@ create table course_faculty (
 
 create table enrollment (
   eid int auto_increment primary key,
-  uid varchar(8) not null,
+  uid int  not null,
   cid int not null,
   sem enum ('S1', 'S2') not null default 'S1',
   grade enum (
@@ -71,29 +71,30 @@ create table enrollment (
   foreign key (cid) references course (cid)
 );
 
+
 -- Insert records into the `user` table
-INSERT INTO user (uid, fname, lname, email, password) VALUES
-  ('U001', 'Alice', 'Johnson', 'alice.johnson@example.com', 'password123'),
-  ('U002', 'Bob', 'Smith', 'bob.smith@example.com', 'password456'),
-  ('U003', 'Carol', 'Davis', 'carol.davis@example.com', 'password789'),
-  ('U004', 'David', 'Brown', 'david.brown@example.com', 'password101'),
-  ('U005', 'Eve', 'Wilson', 'eve.wilson@example.com', 'password202');
+INSERT INTO user (fname, lname, email, password) VALUES
+  ('Alice', 'Johnson', 'alice.johnson@example.com', 'password123'),
+  ('Bob', 'Smith', 'bob.smith@example.com', 'password456'),
+  ('Carol', 'Davis', 'carol.davis@example.com', 'password789'),
+  ('David', 'Brown', 'david.brown@example.com', 'password101'),
+  ('Eve', 'Wilson', 'eve.wilson@example.com', 'password202');
 
 -- Insert records into the `admin` table
 INSERT INTO admin (uid) VALUES
-  ('U001'),  -- Alice is an admin
-  ('U003');  -- Carol is also an admin
+  (1),  -- Alice is an admin
+  (3);  -- Carol is also an admin
 
 -- Insert records into the `student` table
 INSERT INTO student (uid, dob, picture, major, enrollDate) VALUES
-  ('U002', '2002-05-14', NULL, 'CS', '2021-09-01'),  -- Bob is a student
-  ('U004', '2003-07-21', NULL, 'EN', '2022-09-01'),  -- David is a student
-  ('U005', '2001-11-05', NULL, 'BA', '2021-09-01');  -- Eve is a student
+  (2, '2002-05-14', NULL, 'CS', '2021-09-01'),  -- Bob is a student
+  (4, '2003-07-21', NULL, 'EN', '2022-09-01'),  -- David is a student
+  (5, '2001-11-05', NULL, 'BA', '2021-09-01');  -- Eve is a student
 
 -- Insert records into the `faculty` table
 INSERT INTO faculty (uid, appDate, dept) VALUES
-  ('U001', '2020-01-15', 'CS'),  -- Alice is a CS faculty member
-  ('U003', '2019-03-22', 'BA');  -- Carol is a BA faculty member
+  (1, '2020-01-15', 'CS'),  -- Alice is a CS faculty member
+  (3, '2019-03-22', 'BA');  -- Carol is a BA faculty member
 
 -- Insert records into the `course` table
 INSERT INTO course (cName, credits, sem) VALUES
@@ -105,14 +106,14 @@ INSERT INTO course (cName, credits, sem) VALUES
 
 -- Insert records into the `course_faculty` table
 INSERT INTO course_faculty (uid, cid) VALUES
-  ('U001', 1),  -- Alice teaches Data Structures
-  ('U001', 5),  -- Alice also teaches Programming Fundamentals
-  ('U003', 2),  -- Carol teaches Business Ethics
+  (1, 1),  -- Alice teaches Data Structures
+  (1, 5),  -- Alice also teaches Programming Fundamentals
+  (3, 2);  -- Carol teaches Business Ethics
 
 -- Insert records into the `enrollment` table
 INSERT INTO enrollment (uid, cid, sem, grade) VALUES
-  ('U002', 1, 'S1', 'A'),    -- Bob enrolled in Data Structures and scored an A
-  ('U002', 5, 'S1', 'B+'),   -- Bob in Programming Fundamentals with a B+
-  ('U004', 3, 'S1', 'B'),    -- David enrolled in Mechanics and scored a B
-  ('U004', 4, 'S2', 'C+'),   -- David in Calculus I with a C+
-  ('U005', 2, 'S2', 'A+');   -- Eve enrolled in Business Ethics with an A+
+  (2, 1, 'S1', 'A'),    -- Bob enrolled in Data Structures and scored an A
+  (2, 5, 'S1', 'B+'),   -- Bob in Programming Fundamentals with a B+
+  (4, 3, 'S1', 'B'),    -- David enrolled in Mechanics and scored a B
+  (4, 4, 'S2', 'C+'),   -- David in Calculus I with a C+
+  (5, 2, 'S2', 'A+');   -- Eve enrolled in Business Ethics with an A+
