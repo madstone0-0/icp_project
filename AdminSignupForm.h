@@ -96,9 +96,12 @@ namespace icpproject {
             // label1
             //
             this->label1->AutoSize = true;
-            this->label1->Location = System::Drawing::Point(286, 69);
+            this->label1->Font =
+                (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 27.75F, System::Drawing::FontStyle::Regular,
+                                             System::Drawing::GraphicsUnit::Point, static_cast<System::Byte>(0)));
+            this->label1->Location = System::Drawing::Point(241, 40);
             this->label1->Name = L"label1";
-            this->label1->Size = System::Drawing::Size(45, 13);
+            this->label1->Size = System::Drawing::Size(151, 42);
             this->label1->TabIndex = 0;
             this->label1->Text = L"Sign Up";
             //
@@ -106,35 +109,35 @@ namespace icpproject {
             //
             this->fnameInputBox->Location = System::Drawing::Point(201, 116);
             this->fnameInputBox->Name = L"fnameInputBox";
-            this->fnameInputBox->Size = System::Drawing::Size(100, 20);
+            this->fnameInputBox->Size = System::Drawing::Size(113, 20);
             this->fnameInputBox->TabIndex = 1;
             //
             // lnameInputBox
             //
-            this->lnameInputBox->Location = System::Drawing::Point(327, 116);
+            this->lnameInputBox->Location = System::Drawing::Point(315, 116);
             this->lnameInputBox->Name = L"lnameInputBox";
-            this->lnameInputBox->Size = System::Drawing::Size(100, 20);
+            this->lnameInputBox->Size = System::Drawing::Size(112, 20);
             this->lnameInputBox->TabIndex = 2;
             //
             // emailInputBox
             //
-            this->emailInputBox->Location = System::Drawing::Point(261, 168);
+            this->emailInputBox->Location = System::Drawing::Point(201, 165);
             this->emailInputBox->Name = L"emailInputBox";
-            this->emailInputBox->Size = System::Drawing::Size(100, 20);
+            this->emailInputBox->Size = System::Drawing::Size(226, 20);
             this->emailInputBox->TabIndex = 3;
             //
             // pswdInputBox
             //
-            this->pswdInputBox->Location = System::Drawing::Point(261, 215);
+            this->pswdInputBox->Location = System::Drawing::Point(201, 215);
             this->pswdInputBox->Name = L"pswdInputBox";
-            this->pswdInputBox->Size = System::Drawing::Size(100, 20);
+            this->pswdInputBox->Size = System::Drawing::Size(226, 20);
             this->pswdInputBox->TabIndex = 4;
             //
             // signUpButton
             //
-            this->signUpButton->Location = System::Drawing::Point(272, 256);
+            this->signUpButton->Location = System::Drawing::Point(201, 256);
             this->signUpButton->Name = L"signUpButton";
-            this->signUpButton->Size = System::Drawing::Size(75, 23);
+            this->signUpButton->Size = System::Drawing::Size(226, 23);
             this->signUpButton->TabIndex = 5;
             this->signUpButton->Text = L"Sign Up";
             this->signUpButton->UseVisualStyleBackColor = true;
@@ -143,7 +146,7 @@ namespace icpproject {
             // label2
             //
             this->label2->AutoSize = true;
-            this->label2->Location = System::Drawing::Point(210, 97);
+            this->label2->Location = System::Drawing::Point(198, 100);
             this->label2->Name = L"label2";
             this->label2->Size = System::Drawing::Size(57, 13);
             this->label2->TabIndex = 6;
@@ -152,7 +155,7 @@ namespace icpproject {
             // label3
             //
             this->label3->AutoSize = true;
-            this->label3->Location = System::Drawing::Point(326, 97);
+            this->label3->Location = System::Drawing::Point(369, 100);
             this->label3->Name = L"label3";
             this->label3->Size = System::Drawing::Size(58, 13);
             this->label3->TabIndex = 7;
@@ -161,7 +164,7 @@ namespace icpproject {
             // label4
             //
             this->label4->AutoSize = true;
-            this->label4->Location = System::Drawing::Point(261, 149);
+            this->label4->Location = System::Drawing::Point(198, 149);
             this->label4->Name = L"label4";
             this->label4->Size = System::Drawing::Size(32, 13);
             this->label4->TabIndex = 8;
@@ -170,13 +173,13 @@ namespace icpproject {
             // label5
             //
             this->label5->AutoSize = true;
-            this->label5->Location = System::Drawing::Point(261, 196);
+            this->label5->Location = System::Drawing::Point(198, 199);
             this->label5->Name = L"label5";
             this->label5->Size = System::Drawing::Size(53, 13);
             this->label5->TabIndex = 9;
             this->label5->Text = L"Password";
             //
-            // SignupForm
+            // AdminSignupForm
             //
             this->AutoScaleDimensions = System::Drawing::SizeF(6, 13);
             this->AutoScaleMode = System::Windows::Forms::AutoScaleMode::Font;
@@ -191,7 +194,7 @@ namespace icpproject {
             this->Controls->Add(this->lnameInputBox);
             this->Controls->Add(this->fnameInputBox);
             this->Controls->Add(this->label1);
-            this->Name = L"SignupForm";
+            this->Name = L"AdminSignupForm";
             this->Text = L"SignupForm";
             this->ResumeLayout(false);
             this->PerformLayout();
@@ -199,6 +202,8 @@ namespace icpproject {
 #pragma endregion
        private:
         AdminService ^ loginService = gcnew AdminService();
+        List<RegularExpressions::Regex ^> ^ emailRegex = gcnew List<RegularExpressions::Regex ^>(1);
+        List<RegularExpressions::Regex ^> ^ passwordRegex = gcnew List<RegularExpressions::Regex ^>(1);
 
         System::Void signUpButton_Click(System::Object ^ sender, System::EventArgs ^ e) {
             auto fname = fnameInputBox->Text->Trim();
@@ -211,12 +216,29 @@ namespace icpproject {
             fList->Add(email);
             fList->Add(password);
 
+            emailRegex->Add(gcnew Regex{"^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z.]{2,6}$"});
+            passwordRegex->Add(gcnew Regex{".{8,}"});
+            // passwordRegex->Add(gcnew Regex{"[A-Z]"});
+            // passwordRegex->Add(gcnew Regex{"\d{3,}"});
+            // passwordRegex->Add(gcnew Regex{"[!@#$%^&*()\-_=+\|{};:/?.>]"});
+
             for each (STR f in fList) {
                 if (String::IsNullOrWhiteSpace(f)) {
                     MessageBox::Show("All fields should be filled");
                     return;
                 }
             }
+
+            if (!validateRegexes(email, emailRegex)) {
+                MessageBox::Show("Invalid email");
+                return;
+            }
+
+            if (!validateRegexes(password, passwordRegex)) {
+                MessageBox::Show("Invalid password");
+                return;
+            }
+
             try {
                 SignupUser ^ admin = gcnew SignupUser{fname, lname, email, password};
                 auto res = loginService->SignUp(admin);

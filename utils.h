@@ -5,13 +5,22 @@
 
 namespace icpproject {
     using namespace System;
+    using namespace System::Collections::Generic;
     using namespace System::Security::Cryptography;
     using namespace System::Text;
+    using namespace System::Text::RegularExpressions;
     using STR = String ^ ;
 
     STR toNETString(const std::string& str) { return gcnew String(str.c_str()); }
 
     std::string fromNETString(STR str) { return msclr::interop::marshal_as<std::string>(str); }
+
+    bool validateRegexes(STR str, List<RegularExpressions::Regex ^> ^ regexes) {
+        for each (Regex ^ re in regexes) {
+            if (!re->IsMatch(str)) return false;
+        }
+        return true;
+    }
 
     STR getHash(STR password) {
         RIPEMD160 ^ ripemd = RIPEMD160::Create();
