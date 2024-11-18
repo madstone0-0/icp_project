@@ -72,7 +72,7 @@ create table enrollment (
 );
 
 
--- Insert records into the `user` table
+/*-- Insert records into the `user` table
 INSERT INTO user (fname, lname, email, password) VALUES
   ('Alice', 'Johnson', 'alice.johnson@example.com', 'password123'),
   ('Bob', 'Smith', 'bob.smith@example.com', 'password456'),
@@ -116,4 +116,4 @@ INSERT INTO enrollment (uid, cid, sem, grade) VALUES
   (2, 5, 'S1', 'B+'),   -- Bob in Programming Fundamentals with a B+
   (4, 3, 'S1', 'B'),    -- David enrolled in Mechanics and scored a B
   (4, 4, 'S2', 'C+'),   -- David in Calculus I with a C+
-  (5, 2, 'S2', 'A+');   -- Eve enrolled in Business Ethics with an A+
+  (5, 2, 'S2', 'A+');   -- Eve enrolled in Business Ethics with an A+*/

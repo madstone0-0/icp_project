@@ -31,29 +31,6 @@ namespace icpproject {
 
     enum class Major { CS, BA, EN, ME, EE, CE, MA };
 
-    STR parseMajor(const Major& major) {
-        switch (major) {
-            case Major::CS:
-                return "CS";
-                break;
-            case Major::BA:
-                return "BA";
-                break;
-            case Major::MA:
-                return "MA";
-                break;
-            case Major::CE:
-                return "CA";
-                break;
-            case Major::EE:
-                return "EE";
-                break;
-            case Major::EN:
-                return "EN";
-                break;
-        }
-    }
-
    public
     value struct SignupStudent {
         STR fname;
@@ -90,9 +67,9 @@ namespace icpproject {
    public
     ref class AdminService {
        public:
-        ServiceReturn<STR> SignUp(SignupUser ^ user) {
+        ServiceReturn<STR> SignUp(SignupUser user) {
             ParamsH params = gcnew Params(1);
-            params->Add("@em", user->email);
+            params->Add("@em", user.email);
             MySqlDataReader ^ reader = db::Ins()->execute("select uid from user where email = @em", params);
 
             if (reader->HasRows) {
@@ -101,10 +78,10 @@ namespace icpproject {
             }
             reader->Close();
 
-            auto fname = user->fname;
-            auto lname = user->lname;
-            auto email = user->email;
-            auto password = user->password;
+            auto fname = user.fname;
+            auto lname = user.lname;
+            auto email = user.email;
+            auto password = user.password;
             auto passhash = getHash(password);
 
             params->Clear();
@@ -123,9 +100,9 @@ namespace icpproject {
             return {true, "Admin added successfully"};
         }
 
-        ServiceReturn<Admin ^> Login(LoginUser ^ user) {
+        ServiceReturn<Admin ^> Login(LoginUser user) {
             ParamsH params = gcnew Params(1);
-            params->Add("@em", user->email);
+            params->Add("@em", user.email);
             MySqlDataReader ^ reader = db::Ins()->execute("select * from user where email = @em", params);
 
             if (!reader->HasRows) {
@@ -134,9 +111,9 @@ namespace icpproject {
             reader->Read();
             auto passhash = reader->GetBodyDefinition("password");
 
-            if (!verifyHash(user->password, passhash)) {
+            if (!verifyHash(user.password, passhash)) {
                 reader->Close();
-                throw gcnew Exception("Invalid password");
+                throw gcnew Exception("Incorrect password");
             }
             // Convert to integer
             auto uid = Convert::ToInt16(reader->GetBodyDefinition("uid"));
@@ -145,13 +122,36 @@ namespace icpproject {
             auto email = reader->GetBodyDefinition("email");
             reader->Close();
 
-            auto adminRes = gcnew Admin{uid, fname, lname, email};
-            return {true, adminRes};
+            return {true, gcnew Admin{uid, fname, lname, email}};
         }
     };
 
    public
     ref class StudentService {
+       private:
+        STR parseMajor(const Major& major) {
+            switch (major) {
+                case Major::CS:
+                    return "CS";
+                    break;
+                case Major::BA:
+                    return "BA";
+                    break;
+                case Major::MA:
+                    return "MA";
+                    break;
+                case Major::CE:
+                    return "CA";
+                    break;
+                case Major::EE:
+                    return "EE";
+                    break;
+                case Major::EN:
+                    return "EN";
+                    break;
+            }
+        }
+
        public:
         ServiceReturn<STR> SignUp(SignupStudent ^ user) {
             ParamsH params = gcnew Params(1);

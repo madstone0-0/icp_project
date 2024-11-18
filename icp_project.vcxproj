@@ -125,26 +125,28 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="AdminLoginForm.cpp" />
+    <ClCompile Include="AdminSignUpForm.cpp" />
     <ClCompile Include="MainForm.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="AdminLoginForm.h">
+      <FileType>CppForm</FileType>
+    </ClInclude>
+    <ClInclude Include="AdminSignUpForm.h">
+      <FileType>CppForm</FileType>
+    </ClInclude>
     <ClInclude Include="db\Database.h" />
     <ClInclude Include="MainForm.h">
       <FileType>CppForm</FileType>
     </ClInclude>
     <ClInclude Include="resource.h" />
     <ClInclude Include="services\LoginService.h" />
-    <ClInclude Include="AdminSignupForm.h">
-      <FileType>CppForm</FileType>
-    </ClInclude>
     <ClInclude Include="utils.h" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="MainForm.resx">
       <DependentUpon>MainForm.h</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="AdminSignupForm.resx">
-      <DependentUpon>AdminSignupForm.h</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
