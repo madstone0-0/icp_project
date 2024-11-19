@@ -1,4 +1,6 @@
 #pragma once
+#include "AdminSignUpForm.h"
+#include "services/LoginService.h"
 
 namespace icpproject {
 
@@ -35,16 +37,19 @@ namespace icpproject {
        private:
         System::Windows::Forms::Label ^ label1;
 
+       private:
+        System::Windows::Forms::TextBox ^ emailTB;
+
+       private:
+        System::Windows::Forms::TextBox ^ passwordTB;
+
+       private:
+        System::Windows::Forms::Button ^ loginButton;
+
        protected:
        private:
-        System::Windows::Forms::TextBox ^ textBox1;
-
        private:
-        System::Windows::Forms::TextBox ^ textBox2;
-
        private:
-        System::Windows::Forms::Button ^ button1;
-
        private:
         System::Windows::Forms::Label ^ label2;
 
@@ -67,9 +72,9 @@ namespace icpproject {
         /// </summary>
         void InitializeComponent(void) {
             this->label1 = (gcnew System::Windows::Forms::Label());
-            this->textBox1 = (gcnew System::Windows::Forms::TextBox());
-            this->textBox2 = (gcnew System::Windows::Forms::TextBox());
-            this->button1 = (gcnew System::Windows::Forms::Button());
+            this->emailTB = (gcnew System::Windows::Forms::TextBox());
+            this->passwordTB = (gcnew System::Windows::Forms::TextBox());
+            this->loginButton = (gcnew System::Windows::Forms::Button());
             this->label2 = (gcnew System::Windows::Forms::Label());
             this->label3 = (gcnew System::Windows::Forms::Label());
             this->linkLabel1 = (gcnew System::Windows::Forms::LinkLabel());
@@ -88,28 +93,29 @@ namespace icpproject {
             this->label1->Text = L"Login";
             this->label1->TextAlign = System::Drawing::ContentAlignment::MiddleCenter;
             //
-            // textBox1
+            // emailTB
             //
-            this->textBox1->Location = System::Drawing::Point(176, 146);
-            this->textBox1->Name = L"textBox1";
-            this->textBox1->Size = System::Drawing::Size(193, 20);
-            this->textBox1->TabIndex = 1;
+            this->emailTB->Location = System::Drawing::Point(176, 146);
+            this->emailTB->Name = L"emailTB";
+            this->emailTB->Size = System::Drawing::Size(193, 20);
+            this->emailTB->TabIndex = 1;
             //
-            // textBox2
+            // passwordTB
             //
-            this->textBox2->Location = System::Drawing::Point(176, 201);
-            this->textBox2->Name = L"textBox2";
-            this->textBox2->Size = System::Drawing::Size(193, 20);
-            this->textBox2->TabIndex = 2;
+            this->passwordTB->Location = System::Drawing::Point(176, 201);
+            this->passwordTB->Name = L"passwordTB";
+            this->passwordTB->Size = System::Drawing::Size(193, 20);
+            this->passwordTB->TabIndex = 2;
             //
-            // button1
+            // loginButton
             //
-            this->button1->Location = System::Drawing::Point(207, 241);
-            this->button1->Name = L"button1";
-            this->button1->Size = System::Drawing::Size(133, 23);
-            this->button1->TabIndex = 3;
-            this->button1->Text = L"Login";
-            this->button1->UseVisualStyleBackColor = true;
+            this->loginButton->Location = System::Drawing::Point(207, 241);
+            this->loginButton->Name = L"loginButton";
+            this->loginButton->Size = System::Drawing::Size(133, 23);
+            this->loginButton->TabIndex = 3;
+            this->loginButton->Text = L"Login";
+            this->loginButton->UseVisualStyleBackColor = true;
+            this->loginButton->Click += gcnew System::EventHandler(this, &AdminLoginForm::loginButton_Click);
             //
             // label2
             //
@@ -138,24 +144,26 @@ namespace icpproject {
             // linkLabel1
             //
             this->linkLabel1->AutoSize = true;
-            this->linkLabel1->Location = System::Drawing::Point(173, 309);
+            this->linkLabel1->Location = System::Drawing::Point(177, 313);
             this->linkLabel1->Name = L"linkLabel1";
             this->linkLabel1->Size = System::Drawing::Size(163, 13);
             this->linkLabel1->TabIndex = 6;
             this->linkLabel1->TabStop = true;
             this->linkLabel1->Text = L"Don\'t have an account\? Sign Up";
+            this->linkLabel1->LinkClicked += gcnew System::Windows::Forms::LinkLabelLinkClickedEventHandler(
+                this, &AdminLoginForm::linkLabel1_LinkClicked);
             //
             // AdminLoginForm
             //
             this->AutoScaleDimensions = System::Drawing::SizeF(6, 13);
             this->AutoScaleMode = System::Windows::Forms::AutoScaleMode::Font;
-            this->ClientSize = System::Drawing::Size(598, 378);
+            this->ClientSize = System::Drawing::Size(557, 378);
             this->Controls->Add(this->linkLabel1);
             this->Controls->Add(this->label3);
             this->Controls->Add(this->label2);
-            this->Controls->Add(this->button1);
-            this->Controls->Add(this->textBox2);
-            this->Controls->Add(this->textBox1);
+            this->Controls->Add(this->loginButton);
+            this->Controls->Add(this->passwordTB);
+            this->Controls->Add(this->emailTB);
             this->Controls->Add(this->label1);
             this->Name = L"AdminLoginForm";
             this->Text = L"AdminLoginForm";
@@ -164,5 +172,47 @@ namespace icpproject {
         }
 #pragma endregion
        private:
+       private:
+        System::Void linkLabel1_LinkClicked(System::Object ^ sender,
+                                            System::Windows::Forms::LinkLabelLinkClickedEventArgs ^ e) {
+            Form ^ signUp = gcnew AdminSignUpForm(this);
+            signUp->Show();
+            this->Hide();
+        }
+
+       private:
+        System::Void loginButton_Click(System::Object ^ sender, System::EventArgs ^ e) {
+            try {
+                auto adminService = gcnew AdminService();
+                auto em = emailTB->Text->Trim();
+                auto pass = passwordTB->Text->Trim();
+                bool isValid = true;
+
+                if (String::IsNullOrWhiteSpace(em)) {
+                    MessageBox::Show("Email cannot be empty");
+                    isValid = false;
+                }
+
+                if (String::IsNullOrWhiteSpace(pass)) {
+                    MessageBox::Show("Password cannot be empty");
+                    isValid = false;
+                }
+
+                if (isValid) {
+                    auto res = adminService->Login(LoginUser{em, pass});
+                    infoMsg("Logging in as admin");
+                    debugMsg(String::Format("Email: {0}\tPassword: {1}", em, pass));
+                    if (res.status) {
+                        MessageBox::Show("Logged in successfully");
+                        auto user = res.data;
+                    } else {
+                        MessageBox::Show("Log in failed");
+                    }
+                }
+
+            } catch (Exception ^ e) {
+                MessageBox::Show(e->Message);
+            }
+        }
     };
 }  // namespace icpproject

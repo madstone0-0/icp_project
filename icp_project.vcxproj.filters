@@ -47,6 +47,9 @@
     <ClInclude Include="AdminLoginForm.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="services\CourseService.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="icp_project.rc">

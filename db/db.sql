@@ -66,7 +66,7 @@ create table enrollment (
     'E',
     'F+',
     'F'
-  ) not null,
+  ),
   foreign key (uid) references student (uid), -- Ensuring only students are enrolled
   foreign key (cid) references course (cid)
 );

@@ -32,3 +32,15 @@ inline STR getHash(STR password) {
 }
 
 inline bool verifyHash(STR password, STR hash) { return getHash(password)->Equals(hash); }
+
+inline void errorMsg(STR msg, STR id = "None") {
+    System::Diagnostics::Debug::WriteLine(String::Format("ID: {0} = Error: {1}", id, msg));
+}
+
+inline void infoMsg(STR msg, STR id = "None") {
+    System::Diagnostics::Debug::WriteLine(String::Format("ID: {0} = Info: {1}", id, msg));
+}
+
+inline void debugMsg(STR msg, STR id = "None") {
+    System::Diagnostics::Debug::WriteLine(String::Format("ID: {0} = Debug: {1}", id, msg));
+}
