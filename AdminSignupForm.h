@@ -29,6 +29,10 @@ namespace icpproject {
         }
 
        private:
+        System::Windows::Forms::LinkLabel ^ linkLabel2;
+
+       public:
+       private:
         Form ^ parentForm;
 
        protected:
@@ -103,6 +107,7 @@ namespace icpproject {
             this->label6 = (gcnew System::Windows::Forms::Label());
             this->fnTB = (gcnew System::Windows::Forms::TextBox());
             this->linkLabel1 = (gcnew System::Windows::Forms::LinkLabel());
+            this->linkLabel2 = (gcnew System::Windows::Forms::LinkLabel());
             this->SuspendLayout();
             //
             // label1
@@ -206,7 +211,7 @@ namespace icpproject {
             // linkLabel1
             //
             this->linkLabel1->AutoSize = true;
-            this->linkLabel1->Location = System::Drawing::Point(166, 320);
+            this->linkLabel1->Location = System::Drawing::Point(166, 314);
             this->linkLabel1->Name = L"linkLabel1";
             this->linkLabel1->Size = System::Drawing::Size(161, 13);
             this->linkLabel1->TabIndex = 12;
@@ -215,11 +220,26 @@ namespace icpproject {
             this->linkLabel1->LinkClicked += gcnew System::Windows::Forms::LinkLabelLinkClickedEventHandler(
                 this, &AdminSignUpForm::linkLabel1_LinkClicked);
             //
+            // linkLabel2
+            //
+            this->linkLabel2->AutoSize = true;
+            this->linkLabel2->Location = System::Drawing::Point(166, 336);
+            this->linkLabel2->Name = L"linkLabel2";
+            this->linkLabel2->Size = System::Drawing::Size(48, 13);
+            this->linkLabel2->TabIndex = 13;
+            this->linkLabel2->TabStop = true;
+            this->linkLabel2->Text = L"Go back";
+            this->linkLabel2->TextAlign = System::Drawing::ContentAlignment::TopCenter;
+            this->linkLabel2->LinkClicked += gcnew System::Windows::Forms::LinkLabelLinkClickedEventHandler(
+                this, &AdminSignUpForm::linkLabel2_LinkClicked);
+            //
             // AdminSignUpForm
             //
             this->AutoScaleDimensions = System::Drawing::SizeF(6, 13);
             this->AutoScaleMode = System::Windows::Forms::AutoScaleMode::Font;
             this->ClientSize = System::Drawing::Size(596, 358);
+            this->ControlBox = false;
+            this->Controls->Add(this->linkLabel2);
             this->Controls->Add(this->linkLabel1);
             this->Controls->Add(this->label6);
             this->Controls->Add(this->fnTB);
@@ -290,6 +310,13 @@ namespace icpproject {
             } catch (Exception ^ e) {
                 MessageBox::Show(e->Message);
             }
+        }
+
+       private:
+        System::Void linkLabel2_LinkClicked(System::Object ^ sender,
+                                            System::Windows::Forms::LinkLabelLinkClickedEventArgs ^ e) {
+            parentForm->Show();
+            this->Close();
         }
     };
 }  // namespace icpproject

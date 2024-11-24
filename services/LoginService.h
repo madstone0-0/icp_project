@@ -131,6 +131,32 @@ namespace icpproject {
         };
     };
 
+    // Attempt at abstraction
+    // public
+    // interface class IUserService {
+    //     ServiceReturn<STR> SignUp(SignupUser user);
+    //     ServiceReturn<STR> Login(LoginUser user);
+    // };
+
+    // public
+    //  ref class BaseUserService : IUserService {
+    //     private:
+    //      STR userTableName = "user";
+    //      STR serviceTableName;
+
+    //    protected:
+    //     generic<typename TEnum> static TEnum parseStrEnum(String ^ value, Dictionary<String ^, TEnum> ^ mapping) {
+    //         if (mapping->ContainsKey(value)) {
+    //             TEnum val;
+    //             mapping->TryGetValue(value, val);
+    //             return val;
+    //         }
+    //         throw gcnew Exception("Invalid enum value");
+    //     }
+
+    //    public:
+    // };
+
    public
     ref class AdminService {
        public:

@@ -10,6 +10,7 @@ int main(array<System::String ^> ^ args) {
     Application::SetCompatibleTextRenderingDefault(false);
 
     icpproject::AdminLoginForm form;
+    // icpproject::MainForm form;
     Application::Run(% form);
 
     return 0;

@@ -1,5 +1,6 @@
 #pragma once
 #include "AdminSignUpForm.h"
+#include "MainForm.h"
 #include "services/LoginService.h"
 
 namespace icpproject {
@@ -60,6 +61,9 @@ namespace icpproject {
         System::Windows::Forms::LinkLabel ^ linkLabel1;
 
        private:
+        System::Windows::Forms::Button ^ button1;
+
+       private:
         /// <summary>
         /// Required designer variable.
         /// </summary>
@@ -71,6 +75,8 @@ namespace icpproject {
         /// the contents of this method with the code editor.
         /// </summary>
         void InitializeComponent(void) {
+            System::ComponentModel::ComponentResourceManager ^ resources =
+                (gcnew System::ComponentModel::ComponentResourceManager(AdminLoginForm::typeid));
             this->label1 = (gcnew System::Windows::Forms::Label());
             this->emailTB = (gcnew System::Windows::Forms::TextBox());
             this->passwordTB = (gcnew System::Windows::Forms::TextBox());
@@ -78,6 +84,7 @@ namespace icpproject {
             this->label2 = (gcnew System::Windows::Forms::Label());
             this->label3 = (gcnew System::Windows::Forms::Label());
             this->linkLabel1 = (gcnew System::Windows::Forms::LinkLabel());
+            this->button1 = (gcnew System::Windows::Forms::Button());
             this->SuspendLayout();
             //
             // label1
@@ -109,9 +116,9 @@ namespace icpproject {
             //
             // loginButton
             //
-            this->loginButton->Location = System::Drawing::Point(207, 241);
+            this->loginButton->Location = System::Drawing::Point(176, 241);
             this->loginButton->Name = L"loginButton";
-            this->loginButton->Size = System::Drawing::Size(133, 23);
+            this->loginButton->Size = System::Drawing::Size(93, 23);
             this->loginButton->TabIndex = 3;
             this->loginButton->Text = L"Login";
             this->loginButton->UseVisualStyleBackColor = true;
@@ -153,11 +160,22 @@ namespace icpproject {
             this->linkLabel1->LinkClicked += gcnew System::Windows::Forms::LinkLabelLinkClickedEventHandler(
                 this, &AdminLoginForm::linkLabel1_LinkClicked);
             //
+            // button1
+            //
+            this->button1->Location = System::Drawing::Point(275, 241);
+            this->button1->Name = L"button1";
+            this->button1->Size = System::Drawing::Size(94, 23);
+            this->button1->TabIndex = 7;
+            this->button1->Text = L"Cancel";
+            this->button1->UseVisualStyleBackColor = true;
+            this->button1->Click += gcnew System::EventHandler(this, &AdminLoginForm::button1_Click);
+            //
             // AdminLoginForm
             //
             this->AutoScaleDimensions = System::Drawing::SizeF(6, 13);
             this->AutoScaleMode = System::Windows::Forms::AutoScaleMode::Font;
             this->ClientSize = System::Drawing::Size(557, 378);
+            this->Controls->Add(this->button1);
             this->Controls->Add(this->linkLabel1);
             this->Controls->Add(this->label3);
             this->Controls->Add(this->label2);
@@ -165,8 +183,12 @@ namespace icpproject {
             this->Controls->Add(this->passwordTB);
             this->Controls->Add(this->emailTB);
             this->Controls->Add(this->label1);
+            this->Icon = (cli::safe_cast<System::Drawing::Icon ^>(resources->GetObject(L"$this.Icon")));
+            this->MaximizeBox = false;
+            this->MinimizeBox = false;
             this->Name = L"AdminLoginForm";
             this->Text = L"AdminLoginForm";
+            this->Load += gcnew System::EventHandler(this, &AdminLoginForm::AdminLoginForm_Load);
             this->ResumeLayout(false);
             this->PerformLayout();
         }
@@ -205,6 +227,9 @@ namespace icpproject {
                     if (res.status) {
                         MessageBox::Show("Logged in successfully");
                         auto user = res.data;
+                        auto mainForm = gcnew MainForm();
+                        mainForm->Show();
+                        this->Hide();
                     } else {
                         MessageBox::Show("Log in failed");
                     }
@@ -214,5 +239,11 @@ namespace icpproject {
                 MessageBox::Show(e->Message);
             }
         }
+
+       private:
+        System::Void AdminLoginForm_Load(System::Object ^ sender, System::EventArgs ^ e) {}
+
+       private:
+        System::Void button1_Click(System::Object ^ sender, System::EventArgs ^ e) { Application::Exit(); }
     };
 }  // namespace icpproject
