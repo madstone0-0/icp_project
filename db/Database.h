@@ -26,6 +26,7 @@ namespace icpproject {
         MySqlCommand ^ cmd;
         MySqlDataReader ^ reader;
         MySqlDataAdapter ^ dta;
+        MySqlTransaction ^ trans;
         Database() {
             conn = gcnew MySqlConnection(System::String::Format(
                 "server={0};port={1};user={2};password={3};database={4}", HOST, PORT, USER, PASS, DB));
@@ -57,8 +58,22 @@ namespace icpproject {
                 return reader;
             }
 
-            MySqlDataReader
-            ^
+            void beginTransaction() {
+            trans = conn->BeginTransaction();
+            cmd->Transaction = trans;
+        }
+
+        void rollback() {
+            if (trans != nullptr) trans->Rollback();
+            trans = nullptr;
+        }
+
+        void commit() {
+            if (trans != nullptr) trans->Commit();
+            trans = nullptr;
+        }
+
+        MySqlDataReader ^
             execute(String ^ query, ParamsH paramMap) {
                 cmd->CommandText = query;
 

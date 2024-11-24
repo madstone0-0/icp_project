@@ -87,7 +87,7 @@ create table prerequisites (
     cid int NOT null,
     preqid int NOT null,
     primary key (cid, preqid),
-    foreign key (cid) references course(cid),
+    foreign key (cid) references course(cid) ON DELETE CASCADE,
     foreign key (preqid) references course(cid)
 );
 
