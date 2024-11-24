@@ -63,10 +63,10 @@ create table faculty (
         current_date()
     ),
     dept enum (
-        "cs",
-        "hm",
-        "en",
-        "ba"
+        "CS",
+        "HM",
+        "EN",
+        "BA"
     ) not null,
     foreign key (uid) references user (uid)
 );
@@ -104,7 +104,7 @@ create table enrollment (
   eid int auto_increment primary key,
   uid int  not null,
   cid int not null,
-  sem enum ('s1', 's2') not null default 's1',
+  sem enum ('S1', 'S2') not null default 'S1',
   grade enum (
     'A+',
     'A',
