@@ -2,7 +2,9 @@
 #include <iostream>
 
 #include "db/Database.h"
+#include "services/CourseService.h"
 #include "services/LoginService.h"
+#include "utils.h"
 
 namespace icpproject {
     using namespace std;
@@ -20,6 +22,7 @@ namespace icpproject {
    public
     ref class MainForm : public System::Windows::Forms::Form {
         DataTable ^ dt = gcnew DataTable();
+        IUser ^ user = nullptr;
 
        public:
         MainForm(void) {
@@ -27,6 +30,11 @@ namespace icpproject {
             //
             // TODO: Add the constructor code here
             //
+        }
+
+        MainForm(IUser ^ user) {
+            this->user = user;
+            InitializeComponent();
         }
 
        protected:
@@ -124,7 +132,6 @@ namespace icpproject {
             this->Icon = (cli::safe_cast<System::Drawing::Icon ^>(resources->GetObject(L"$this.Icon")));
             this->IsMdiContainer = true;
             this->MainMenuStrip = this->menuStrip1;
-            this->MaximizeBox = false;
             this->Name = L"MainForm";
             this->StartPosition = System::Windows::Forms::FormStartPosition::CenterScreen;
             this->Text = L"MainForm";
@@ -141,11 +148,29 @@ namespace icpproject {
        private:
         System::Void MainForm_Load(System::Object ^ sender, System::EventArgs ^ e) {
             try {
-                auto res = db::Ins()->execute("select * from user");
+                infoMsg("Welcome " + user->FirstName + " " + user->LastName);
+                CourseService ^ courseService = gcnew CourseService(user);
+
+                // courseService->Add(NewCourse("Test", 3, Semester::S1, 10));
+                // courseService->Add(NewCourse("Test2", 2, Semester::S1));
+                // courseService->Add(NewCourse("Test3", 1.5, Semester::S2));
+
+                /* auto pre = gcnew PreReqList(2);
+                 pre->Add(2);
+                 pre->Add(3);
+                 courseService->Update(Course(1, "Test", 2, Semester::S1, 10, pre));*/
+
+                auto res = courseService->GetAll();
+                usersGrid->DataSource = res.data;
+
+                // courseService->Delete(1);
+
+                /*auto res = db::Ins()->execute("select * from user");
                 dt->Load(res);
                 res->Close();
-                usersGrid->DataSource = dt;
+                usersGrid->DataSource = dt;*/
             } catch (Exception ^ e) {
+                errorMsg(e->Message);
                 MessageBox::Show(e->Message);
             }
         }

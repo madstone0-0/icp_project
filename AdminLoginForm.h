@@ -227,7 +227,7 @@ namespace icpproject {
                     if (res.status) {
                         MessageBox::Show("Logged in successfully");
                         auto user = res.data;
-                        auto mainForm = gcnew MainForm();
+                        auto mainForm = gcnew MainForm(user);
                         mainForm->Show();
                         this->Hide();
                     } else {

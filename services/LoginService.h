@@ -4,16 +4,11 @@
 
 #include "../db/Database.h"
 #include "../utils.h"
+#include "./AuditService.h"
 
 namespace icpproject {
     using namespace std;
     using System::Diagnostics::Debug;
-
-    template <typename T>
-    public value struct ServiceReturn {
-        bool status;
-        T data;
-    };
 
    public
     value struct SignupUser {
@@ -29,10 +24,6 @@ namespace icpproject {
             password = p;
         }
     };
-
-    enum class Major { CS, BA, EN, ME, EE, CE, MA };
-
-    enum class Department { CS, HM, EN, BA };
 
    public
     value struct SignupStudent {
@@ -62,21 +53,6 @@ namespace icpproject {
         STR password;
     };
 
-   public
-    value struct Admin {
-        int uid;
-        STR fname;
-        STR lname;
-        STR email;
-
-        Admin(int u, STR f, STR l, STR e) {
-            uid = u;
-            fname = f;
-            lname = l;
-            email = e;
-        }
-    };
-
     inline bool isUserType(int uid, STR tableName) {
         MySqlDataReader ^ reader = nullptr;
         try {
@@ -91,8 +67,44 @@ namespace icpproject {
 
     using PictureH = cli::array<unsigned char> ^ ;
     using Picture = cli::array<unsigned char>;
+
    public
-    value struct Student {
+    value struct Admin : public IUser {
+        int uid;
+        STR fname;
+        STR lname;
+        STR email;
+
+        virtual property int UID {
+            int get() { return uid; }
+            void set(int value) { uid = value; }
+        }
+
+        virtual property STR FirstName {
+            STR get() { return fname; }
+            void set(STR value) { fname = value; }
+        }
+
+        virtual property STR LastName {
+            STR get() { return lname; }
+            void set(STR value) { lname = value; }
+        }
+
+        virtual property STR Email {
+            STR get() { return email; }
+            void set(STR value) { email = value; }
+        }
+
+        Admin(int u, STR f, STR l, STR e) {
+            uid = u;
+            fname = f;
+            lname = l;
+            email = e;
+        }
+    };
+
+   public
+    value struct Student : public IUser {
         int uid;
         STR fname;
         STR lname;
@@ -101,6 +113,27 @@ namespace icpproject {
         PictureH picture;
         Major major;
         STR enrollDate;
+
+        virtual property int UID {
+            int get() { return uid; }
+            void set(int value) { uid = value; }
+        }
+
+        virtual property STR FirstName {
+            STR get() { return fname; }
+            void set(STR value) { fname = value; }
+        }
+
+        virtual property STR LastName {
+            STR get() { return lname; }
+            void set(STR value) { lname = value; }
+        }
+
+        virtual property STR Email {
+            STR get() { return email; }
+            void set(STR value) { email = value; }
+        }
+
         Student(int u, STR f, STR l, STR e, STR d, PictureH p, Major m, STR en) {
             uid = u;
             fname = f;
@@ -114,13 +147,34 @@ namespace icpproject {
     };
 
    public
-    value struct Faculty {
+    value struct Faculty : public IUser {
         int uid;
         STR fname;
         STR lname;
         STR email;
         STR appDate;
         Department dept;
+
+        virtual property int UID {
+            int get() { return uid; }
+            void set(int value) { uid = value; }
+        }
+
+        virtual property STR FirstName {
+            STR get() { return fname; }
+            void set(STR value) { fname = value; }
+        }
+
+        virtual property STR LastName {
+            STR get() { return lname; }
+            void set(STR value) { lname = value; }
+        }
+
+        virtual property STR Email {
+            STR get() { return email; }
+            void set(STR value) { email = value; }
+        }
+
         Faculty(int u, STR f, STR l, STR e, STR a, Department d) {
             uid = u;
             fname = f;
@@ -190,6 +244,7 @@ namespace icpproject {
                 params->Clear();
                 params->Add("@u", Convert::ToString(uid));
                 db::Ins()->executeNoRet("insert into admin (uid) values (@u)", params);
+                Audit::Ins()->log("AdminSignUp", uid);
 
                 return {true, "Admin added successfully"};
             } finally {
@@ -197,7 +252,7 @@ namespace icpproject {
             }
         }
 
-        ServiceReturn<Admin ^> Login(LoginUser user) {
+        ServiceReturn<IUser ^> Login(LoginUser user) {
             ParamsH params = gcnew Params(1);
             params->Add("@em", user.email);
             MySqlDataReader ^ reader = nullptr;
@@ -225,6 +280,7 @@ namespace icpproject {
                     throw gcnew Exception("User is not an admin");
                 }
 
+                Audit::Ins()->log("AdminLogin", uid);
                 return {true, gcnew Admin{uid, fname, lname, email}};
             } finally {
                 if (reader != nullptr) reader->Close();
@@ -235,38 +291,6 @@ namespace icpproject {
    public
     ref class StudentService {
        private:
-        STR parseMajor(const Major& major) {
-            switch (major) {
-                case Major::CS:
-                    return "CS";
-                    break;
-                case Major::BA:
-                    return "BA";
-                    break;
-                case Major::MA:
-                    return "MA";
-                    break;
-                case Major::CE:
-                    return "CA";
-                    break;
-                case Major::EE:
-                    return "EE";
-                    break;
-                case Major::EN:
-                    return "EN";
-                    break;
-            }
-        }
-
-        Major parseStrMajor(STR major) {
-            if (major == "CS") return Major::CS;
-            if (major == "BA") return Major::BA;
-            if (major == "MA") return Major::MA;
-            if (major == "CA") return Major::CE;
-            if (major == "EE") return Major::EE;
-            if (major == "EN") return Major::EN;
-        }
-
        public:
         ServiceReturn<STR> SignUp(SignupStudent ^ user) {
             ParamsH params = gcnew Params(1);
@@ -315,13 +339,15 @@ namespace icpproject {
                 params->Add("@e", enrollDate);
                 db::Ins()->executeNoRet(
                     "insert into student (uid, dob, picture, major, enrollDate) values (@u, @d, @p, @m, @e)", params);
+
+                Audit::Ins()->log("StudentSignUp", uid);
                 return {true, "Student added successfully"};
             } finally {
                 if (reader != nullptr) reader->Close();
             }
         }
 
-        ServiceReturn<Student ^> Login(LoginUser ^ user) {
+        ServiceReturn<IUser ^> Login(LoginUser ^ user) {
             ParamsH params = gcnew Params(1);
             params->Add("@em", user->email);
             MySqlDataReader ^ reader = nullptr;
@@ -358,10 +384,12 @@ namespace icpproject {
                     auto enrollDate = reader->GetBodyDefinition("enrollDate");
 
                     auto studentRes = gcnew Student{uid, fname, lname, email, dob, picture, major, enrollDate};
+                    Audit::Ins()->log("StudentLogin", uid);
                     return {true, studentRes};
                 } catch (Exception ^ e) {
                     reader->Close();
                     errorMsg(e->Message, "StudentLogin");
+                    Audit::Ins()->log("StudentLogin", uid, e->Message);
                     return {false, nullptr};
                 }
             } finally {
@@ -373,30 +401,6 @@ namespace icpproject {
    public
     ref class FacultyService {
        private:
-        STR parseDept(const Department& dept) {
-            switch (dept) {
-                case Department::CS:
-                    return "CS";
-                    break;
-                case Department::HM:
-                    return "HM";
-                    break;
-                case Department::EN:
-                    return "EN";
-                    break;
-                case Department::BA:
-                    return "BA";
-                    break;
-            }
-        }
-
-        Department parseStrDept(STR dept) {
-            if (dept == "CS") return Department::CS;
-            if (dept == "HM") return Department::HM;
-            if (dept == "EN") return Department::EN;
-            if (dept == "BA") return Department::BA;
-        }
-
        public:
         ServiceReturn<STR> SignUp(SignupFaculty faculty) {
             ParamsH params = gcnew Params(1);
@@ -432,13 +436,14 @@ namespace icpproject {
                 params->Add("@dept", parseDept(dept));
                 db::Ins()->executeNoRet("insert into faculty (uid, appDate, dept) values (@app, @dept)", params);
 
+                Audit::Ins()->log("FacultySignUp", uid);
                 return {true, "Faculty added successfully"};
             } finally {
                 if (reader != nullptr) reader->Close();
             }
         }
 
-        ServiceReturn<Faculty ^> Login(LoginUser user) {
+        ServiceReturn<IUser ^> Login(LoginUser user) {
             ParamsH params = gcnew Params(1);
             params->Add("@em", user.email);
             MySqlDataReader ^ reader = nullptr;
@@ -468,6 +473,7 @@ namespace icpproject {
                     throw gcnew Exception("User is not a faculty");
                 }
 
+                Audit::Ins()->log("FacultyLogin", uid);
                 return {true, gcnew Faculty{uid, fname, lname, email, appD, dept}};
             } finally {
                 if (reader != nullptr) reader->Close();
