@@ -96,7 +96,7 @@ create table course_faculty (
   uid int not null,
   cid int not null,
   primary key (uid, cid),
-  foreign key (uid) references faculty (uid), -- ensuring only faculty are linked to courses
+  foreign key (uid) references faculty (uid) ON DELETE CASCADE,
   foreign key (cid) references course (cid)
 );
 
@@ -119,8 +119,8 @@ create table enrollment (
     'F+',
     'F'
   ),
-  foreign key (uid) references student (uid), -- ensuring only students are enrolled
-  foreign key (cid) references course (cid)
+  foreign key (uid) references student (uid) ON DELETE CASCADE,
+  foreign key (cid) references course (cid) ON DELETE CASCADE
 );
 
 create table schedule (
@@ -185,5 +185,5 @@ insert into enrollment (uid, cid, sem, grade) values
   (2, 1, 's1', 'a'),    -- bob enrolled in data structures and scored an a
   (2, 5, 's1', 'b+'),   -- bob in programming fundamentals with a b+
   (4, 3, 's1', 'b'),    -- david enrolled in mechanics and scored a b
-  (4, 4, 's2', 'c+'),   -- david in calculus i with a c+
+  (4, 4, 's2', 'c+'),   -- david    in calculus i with a c+
   (5, 2, 's2', 'a+');   -- eve enrolled in business ethics with an a+*/
