@@ -99,15 +99,64 @@ namespace icpproject {
        public:
         CourseService(IUser ^ user) : UserService{user} {}
 
+        ServiceReturn<Course ^> GetById(long long cid) {
+            MySqlDataReader ^ reader = nullptr;
+            try {
+                if (!doesCourseExistId(cid)) {
+                    reader->Close();
+                    throw gcnew Exception("Course does not exist");
+                }
+
+                reader = db::Ins()->execute(String::Format("select * from course where cid = {0}", cid));
+                reader->Read();
+                auto cname = reader->GetBodyDefinition("cname");
+                auto credits = Convert::ToDouble(reader->GetBodyDefinition("credits"));
+                auto sem = parseStrSemester(reader->GetBodyDefinition("sem"));
+                auto capacity = Convert::ToInt16(reader->GetBodyDefinition("capacity"));
+
+                auto course = gcnew Course(cid, cname, credits, sem, capacity);
+                return {true, course};
+            } finally {
+                if (reader != nullptr) {
+                    reader->Close();
+                }
+            }
+        }
+
         ServiceReturn<DataTable ^> GetAll() {
             MySqlDataReader ^ reader = nullptr;
             try {
                 reader = db::Ins()->execute("select * from course");
                 DataTable ^ dt = gcnew DataTable();
                 dt->Load(reader);
+                reader->Close();
 
-                Audit::Ins()->log("Viewed all courses", user->UID);
+                Audit::Ins()->Log("Viewed all courses", user->UID);
                 return {true, dt};
+            } finally {
+                if (reader != nullptr) {
+                    reader->Close();
+                }
+            }
+        }
+
+        ServiceReturn<int> GetRemainingCapacity(long long cid) {
+            MySqlDataReader ^ reader = nullptr;
+            try {
+                if (!doesCourseExistId(cid)) {
+                    throw gcnew Exception("Course does not exist");
+                }
+
+                reader = db::Ins()->execute(String::Format("select capacity from course where cid = {0}", cid));
+                reader->Read();
+                auto cap = Convert::ToInt32(reader->GetBodyDefinition("capacity"));
+                reader->Close();
+                reader =
+                    db::Ins()->execute("select count(*) as count from enrollment where cid = " + cid + " group by cid");
+                auto enrolled = reader->Read() ? Convert::ToInt32(reader->GetBodyDefinition("count")) : 0;
+
+                Audit::Ins()->Log("Viewed remaining capacity", user->UID, "Course ID: " + cid);
+                return {true, cap - enrolled};
             } finally {
                 if (reader != nullptr) {
                     reader->Close();
@@ -147,7 +196,7 @@ namespace icpproject {
                 }
 
                 db::Ins()->commit();
-                Audit::Ins()->log("Added new course", user->UID, "Course: " + newCourse.cname);
+                Audit::Ins()->Log("Added new course", user->UID, "Course: " + newCourse.cname);
                 return {true, "Course added successfully"};
 
             } finally {
@@ -189,7 +238,7 @@ namespace icpproject {
                 }
 
                 db::Ins()->commit();
-                Audit::Ins()->log("Updated course", user->UID, "Course: " + course.cname);
+                Audit::Ins()->Log("Updated course", user->UID, "Course: " + course.cname);
                 return {true, "Course updated successfully"};
 
             } finally {
@@ -208,7 +257,7 @@ namespace icpproject {
 
                 db::Ins()->executeNoRet("delete from course where cid = " + cid);
 
-                Audit::Ins()->log("Deleted course", user->UID, "Course ID: " + cid);
+                Audit::Ins()->Log("Deleted course", user->UID, "Course ID: " + cid);
                 return {true, "Course deleted successfully"};
             } finally {
                 if (reader != nullptr) {
@@ -226,7 +275,8 @@ namespace icpproject {
 
                 cli::array<Course> ^ courses = gcnew cli::array<Course>(0);
                 reader = db::Ins()->execute(
-                    "select * from course where cid in (select preqid from prereq where cid = " + cid + ")");
+                    "select * from course where cid in (select preqid from prerequisites where cid = " + cid + ")");
+                reader->Read();
                 auto cid = Convert::ToInt32(reader->GetBodyDefinition("cid"));
                 auto cname = reader->GetBodyDefinition("cname");
                 auto credits = Convert::ToDouble(reader->GetBodyDefinition("credits"));
@@ -239,7 +289,7 @@ namespace icpproject {
                     courses[courses->Length - 1] = c;
                 }
 
-                Audit::Ins()->log("Viewed prerequisite courses", user->UID, "Course ID: " + cid);
+                Audit::Ins()->Log("Viewed prerequisite courses", user->UID, "Course ID: " + cid);
                 return {true, courses};
             } finally {
                 if (reader != nullptr) {

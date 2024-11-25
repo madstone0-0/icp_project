@@ -65,8 +65,8 @@ namespace icpproject {
         }
     }
 
-    using PictureH = cli::array<unsigned char> ^ ;
-    using Picture = cli::array<unsigned char>;
+    using Picture = cli::array<Byte>;
+    using PictureH = Picture ^ ;
 
    public
     value struct Admin : public IUser {
@@ -237,16 +237,27 @@ namespace icpproject {
                 params->Add("@ln", lname);
                 params->Add("@em", email);
                 params->Add("@pass", passhash);
-                db::Ins()->executeNoRet(
-                    "insert into user (fname, lname, email, password) values (@fn, @ln, @em, @pass)", params);
 
-                auto uid = db::Ins()->getCmd()->LastInsertedId;
-                params->Clear();
-                params->Add("@u", Convert::ToString(uid));
-                db::Ins()->executeNoRet("insert into admin (uid) values (@u)", params);
-                Audit::Ins()->log("AdminSignUp", uid);
+                db::Ins()->beginTransaction();
+                try {
+                    db::Ins()->executeNoRet(
+                        "insert into user (fname, lname, email, password) values (@fn, @ln, @em, @pass)", params);
 
-                return {true, "Admin added successfully"};
+                    auto uid = db::Ins()->getCmd()->LastInsertedId;
+                    params->Clear();
+                    params->Add("@u", Convert::ToString(uid));
+                    db::Ins()->executeNoRet("insert into admin (uid) values (@u)", params);
+                    Audit::Ins()->Log("AdminSignUp", uid);
+
+                    return {true, "Admin added successfully"};
+                } catch (Exception ^ e) {
+                    reader->Close();
+                    db::Ins()->rollback();
+                    throw e;
+                } finally {
+                    db::Ins()->commit();
+                }
+
             } finally {
                 if (reader != nullptr) reader->Close();
             }
@@ -280,7 +291,7 @@ namespace icpproject {
                     throw gcnew Exception("User is not an admin");
                 }
 
-                Audit::Ins()->log("AdminLogin", uid);
+                Audit::Ins()->Log("AdminLogin", uid);
                 return {true, gcnew Admin{uid, fname, lname, email}};
             } finally {
                 if (reader != nullptr) reader->Close();
@@ -318,30 +329,40 @@ namespace icpproject {
                 params->Add("@ln", lname);
                 params->Add("@em", email);
                 params->Add("@pass", passhash);
-                db::Ins()->executeNoRet(
-                    "insert into user (fname, lname, email, password) values (@fn, @ln, @em, @pass)", params);
-
-                auto uid = db::Ins()->getCmd()->LastInsertedId;
-                cli::array<unsigned char> ^ buff;
+                db::Ins()->beginTransaction();
                 try {
-                    auto fs = gcnew System::IO::FileStream(picturePath, IO::FileMode::Open, IO::FileAccess::Read);
-                    auto binReader = gcnew IO::BinaryReader(fs);
-                    buff = binReader->ReadBytes(fs->Length);
-                } catch (Exception ^ e) {
-                    errorMsg(e->Message, "StudentSignUp");
-                    throw e;
-                }
-                params->Clear();
-                params->Add("@u", Convert::ToString(uid));
-                params->Add("@d", dob);
-                params->Add("@p", buff);
-                params->Add("@m", parseMajor(major));
-                params->Add("@e", enrollDate);
-                db::Ins()->executeNoRet(
-                    "insert into student (uid, dob, picture, major, enrollDate) values (@u, @d, @p, @m, @e)", params);
+                    db::Ins()->executeNoRet(
+                        "insert into user (fname, lname, email, password) values (@fn, @ln, @em, @pass)", params);
 
-                Audit::Ins()->log("StudentSignUp", uid);
-                return {true, "Student added successfully"};
+                    auto uid = db::Ins()->getCmd()->LastInsertedId;
+                    cli::array<unsigned char> ^ buff;
+                    try {
+                        auto fs = gcnew System::IO::FileStream(picturePath, IO::FileMode::Open, IO::FileAccess::Read);
+                        auto binReader = gcnew IO::BinaryReader(fs);
+                        buff = binReader->ReadBytes(fs->Length);
+                    } catch (Exception ^ e) {
+                        errorMsg(e->Message, "StudentSignUp");
+                        throw e;
+                    }
+                    params->Clear();
+                    params->Add("@u", Convert::ToString(uid));
+                    params->Add("@d", dob);
+                    params->Add("@p", buff);
+                    params->Add("@m", parseMajor(major));
+                    params->Add("@e", enrollDate);
+                    db::Ins()->executeNoRet(
+                        "insert into student (uid, dob, picture, major, enrollDate) values (@u, @d, @p, @m, @e)",
+                        params);
+
+                    Audit::Ins()->Log("StudentSignUp", uid);
+                    return {true, "Student added successfully"};
+                } catch (Exception ^ e) {
+                    reader->Close();
+                    db::Ins()->rollback();
+                    throw e;
+                } finally {
+                    db::Ins()->commit();
+                }
             } finally {
                 if (reader != nullptr) reader->Close();
             }
@@ -354,9 +375,11 @@ namespace icpproject {
 
             try {
                 reader = db::Ins()->execute("select * from user where email = @em", params);
+
                 if (!reader->HasRows) {
                     throw gcnew Exception("User not found");
                 }
+
                 reader->Read();
                 auto uid = Convert::ToInt16(reader->GetBodyDefinition("uid"));
                 auto passhash = reader->GetBodyDefinition("password");
@@ -368,29 +391,34 @@ namespace icpproject {
                 if (!verifyHash(user->password, passhash)) {
                     throw gcnew Exception("Invalid password");
                 }
-                // Convert to integer
 
                 if (!isUserType(uid, "student")) {
                     throw gcnew Exception("User is not a student");
                 }
 
+                db::Ins()->beginTransaction();
                 try {
                     reader = db::Ins()->execute("select * from student where uid = " + Convert::ToString(uid));
+                    reader->Read();
                     auto dob = reader->GetBodyDefinition("dob");
-                    auto pictureStr = reader->GetBodyDefinition("picture");
-                    PictureH picture = gcnew Picture(pictureStr->Length);
-                    picture = Encoding::UTF8->GetBytes(pictureStr);
+                    auto pictureLen = reader->GetBytes(reader->GetOrdinal("picture"), 0, nullptr, 0, 0);
+                    PictureH picture = gcnew Picture(pictureLen);
+                    reader->GetBytes(reader->GetOrdinal("picture"), 0, picture, 0, pictureLen);
                     auto major = parseStrMajor(reader->GetBodyDefinition("major"));
                     auto enrollDate = reader->GetBodyDefinition("enrollDate");
+                    reader->Close();
 
                     auto studentRes = gcnew Student{uid, fname, lname, email, dob, picture, major, enrollDate};
-                    Audit::Ins()->log("StudentLogin", uid);
+                    Audit::Ins()->Log("StudentLogin", uid);
                     return {true, studentRes};
                 } catch (Exception ^ e) {
                     reader->Close();
+                    db::Ins()->rollback();
                     errorMsg(e->Message, "StudentLogin");
-                    Audit::Ins()->log("StudentLogin", uid, e->Message);
+                    Audit::Ins()->Log("StudentLogin", uid, e->Message);
                     return {false, nullptr};
+                } finally {
+                    db::Ins()->commit();
                 }
             } finally {
                 if (reader != nullptr) reader->Close();
@@ -427,17 +455,28 @@ namespace icpproject {
                 params->Add("@ln", lname);
                 params->Add("@em", email);
                 params->Add("@pass", passhash);
-                db::Ins()->executeNoRet(
-                    "insert into user (fname, lname, email, password) values (@fn, @ln, @em, @pass)", params);
+                db::Ins()->beginTransaction();
+                try {
+                    db::Ins()->executeNoRet(
+                        "insert into user (fname, lname, email, password) values (@fn, @ln, @em, @pass)", params);
 
-                auto uid = db::Ins()->getCmd()->LastInsertedId;
-                params->Clear();
-                params->Add("@app", appDate);
-                params->Add("@dept", parseDept(dept));
-                db::Ins()->executeNoRet("insert into faculty (uid, appDate, dept) values (@app, @dept)", params);
+                    auto uid = db::Ins()->getCmd()->LastInsertedId;
+                    params->Clear();
+                    params->Add("@uid", uid);
+                    params->Add("@app", appDate);
+                    params->Add("@dept", parseDept(dept));
+                    db::Ins()->executeNoRet("insert into faculty (uid, appDate, dept) values (@uid, @app, @dept)",
+                                            params);
 
-                Audit::Ins()->log("FacultySignUp", uid);
-                return {true, "Faculty added successfully"};
+                    Audit::Ins()->Log("FacultySignUp", uid);
+                    return {true, "Faculty added successfully"};
+                } catch (Exception ^ e) {
+                    reader->Close();
+                    db::Ins()->rollback();
+                    throw e;
+                } finally {
+                    db::Ins()->commit();
+                }
             } finally {
                 if (reader != nullptr) reader->Close();
             }
@@ -449,7 +488,10 @@ namespace icpproject {
             MySqlDataReader ^ reader = nullptr;
 
             try {
-                reader = db::Ins()->execute("select * from user where email = @em", params);
+                reader = db::Ins()->execute(
+                    "select user.uid as uid, fname, lname, email, appDate, password, dept from user inner join faculty "
+                    "on user.uid = faculty.uid where email = @em ",
+                    params);
                 if (!reader->HasRows) {
                     reader->Close();
                     throw gcnew Exception("User not found");
@@ -473,7 +515,7 @@ namespace icpproject {
                     throw gcnew Exception("User is not a faculty");
                 }
 
-                Audit::Ins()->log("FacultyLogin", uid);
+                Audit::Ins()->Log("FacultyLogin", uid);
                 return {true, gcnew Faculty{uid, fname, lname, email, appD, dept}};
             } finally {
                 if (reader != nullptr) reader->Close();

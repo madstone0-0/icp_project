@@ -25,15 +25,29 @@ namespace icpproject {
             }
 
             template <typename T>
-            void log(STR action, T uid) {
+            void Log(STR action, T uid) {
             ParamsH params = gcnew Params(1);
             params->Add("@action", action);
             params->Add("@uid", uid);
             db::Ins()->executeNoRet("insert into audit_log (action, user_id) values (@action, @uid)", params);
         }
 
+        ServiceReturn<DataTable ^> GetAll() {
+            MySqlDataReader ^ reader = nullptr;
+            try {
+                reader = db::Ins()->execute("select * from audit_log");
+                DataTable ^ dt = gcnew DataTable();
+                dt->Load(reader);
+                return {true, dt};
+            } finally {
+                if (reader != nullptr) {
+                    reader->Close();
+                }
+            }
+        }
+
         template <typename T>
-        void log(STR action, T uid, STR details) {
+        void Log(STR action, T uid, STR details) {
             ParamsH params = gcnew Params(1);
             params->Add("@action", action);
             params->Add("@uid", uid);
