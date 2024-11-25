@@ -3,6 +3,7 @@
 
 #include "db/Database.h"
 #include "services/CourseService.h"
+#include "services/EnrollService.h"
 #include "services/LoginService.h"
 #include "utils.h"
 

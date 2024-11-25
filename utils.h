@@ -26,6 +26,8 @@ enum class Department { CS, HM, EN, BA };
 
 enum class Semester { S1, S2 };
 
+enum class Grade { A_plus, A, B, B_plus, C, C_plus, D, D_plus, E, E_plus, F_plus, F };
+
 inline STR parseDept(const Department& dept) {
     switch (dept) {
         case Department::CS:
@@ -96,6 +98,62 @@ inline STR parseSemester(const Semester& sem) {
 inline Semester parseStrSemester(STR sem) {
     if (sem == "S1") return Semester::S1;
     if (sem == "S2") return Semester::S2;
+}
+
+inline STR parseGrade(const Grade& grade) {
+    switch (grade) {
+        case Grade::A_plus:
+            return "A+";
+            break;
+        case Grade::A:
+            return "A";
+            break;
+        case Grade::B:
+            return "B";
+            break;
+        case Grade::B_plus:
+            return "B+";
+            break;
+        case Grade::C:
+            return "C";
+            break;
+        case Grade::C_plus:
+            return "C+";
+            break;
+        case Grade::D:
+            return "D";
+            break;
+        case Grade::D_plus:
+            return "D+";
+            break;
+        case Grade::E:
+            return "E";
+            break;
+        case Grade::E_plus:
+            return "E+";
+            break;
+        case Grade::F_plus:
+            return "F+";
+            break;
+        case Grade::F:
+            return "F";
+            break;
+    }
+}
+
+inline Grade parseStrGrade(STR grade) {
+    if (grade == "A+") return Grade::A_plus;
+    if (grade == "A") return Grade::A;
+    if (grade == "B") return Grade::B;
+    if (grade == "B+") return Grade::B_plus;
+    if (grade == "C") return Grade::C;
+    if (grade == "C+") return Grade::C_plus;
+    if (grade == "D") return Grade::D;
+    if (grade == "D+") return Grade::D_plus;
+    if (grade == "E") return Grade::E;
+    if (grade == "E+") return Grade::E_plus;
+    if (grade == "F+") return Grade::F_plus;
+    if (grade == "F") return Grade::F;
 }
 
 public
