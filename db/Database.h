@@ -39,6 +39,23 @@ namespace icpproject {
             } catch (Exception ^ e) {
                 throw gcnew Exception("Error Database Error: " + e->Message);
             }
+
+            // Seed
+            bool seed = false;
+
+            if (seed) {
+                try {
+                    using namespace System::IO;
+                    STR dbPath = "C:/Users/HP/Programming/C++/icp_project/db/db.sql";
+                    StreamReader ^ sr = File::OpenText(dbPath);
+
+                    STR contents = sr->ReadToEnd();
+                    cmd->CommandText = contents;
+                    cmd->ExecuteNonQuery();
+                } catch (Exception ^ e) {
+                    throw gcnew Exception("Failed to seed: " + e->Message);
+                }
+            }
         }
 
        public:
@@ -54,6 +71,8 @@ namespace icpproject {
             ^
             execute(String ^ query) {
                 cmd->CommandText = query;
+
+                if (reader != nullptr) reader->Close();
                 reader = cmd->ExecuteReader();
                 return reader;
             }
@@ -83,6 +102,7 @@ namespace icpproject {
                     cmd->Parameters->AddWithValue(key, val);
                 }
 
+                if (reader != nullptr) reader->Close();
                 reader = cmd->ExecuteReader();
                 cmd->Parameters->Clear();
                 return reader;
@@ -90,6 +110,8 @@ namespace icpproject {
 
             int executeNoRet(String ^ query) {
             cmd->CommandText = query;
+
+            if (reader != nullptr) reader->Close();
             return cmd->ExecuteNonQuery();
         }
 
@@ -102,6 +124,7 @@ namespace icpproject {
                 cmd->Parameters->AddWithValue(key, val);
             }
 
+            if (reader != nullptr) reader->Close();
             auto res = cmd->ExecuteNonQuery();
             cmd->Parameters->Clear();
             return res;
