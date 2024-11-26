@@ -177,6 +177,14 @@ interface class IUser {
 };
 
 public
+interface class IChildHost {
+    property IUser ^ user {
+        IUser ^ get();
+        void set(IUser ^ value);
+    }
+};
+
+public
 value struct User : public IUser {
     int uid;
     STR fname;

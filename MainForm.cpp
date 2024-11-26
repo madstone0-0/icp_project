@@ -14,8 +14,8 @@ int main(cli::array<System::String ^> ^ args) {
     /*LoginServiceTest();
     CourseServiceTest();*/
 
-    icpproject::AdminLoginForm form;
-    //  icpproject::MainForm form;
+    // icpproject::AdminLoginForm form;
+    icpproject::MainForm form;
     Application::Run(% form);
 
     return 0;

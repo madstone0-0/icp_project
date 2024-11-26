@@ -1,6 +1,6 @@
 #pragma once
+#include "./utils.h"
 #include "AdminSignUpForm.h"
-#include "MainForm.h"
 #include "services/LoginService.h"
 
 namespace icpproject {
@@ -17,12 +17,20 @@ namespace icpproject {
     /// </summary>
    public
     ref class AdminLoginForm : public System::Windows::Forms::Form {
+       private:
+        IChildHost ^ parent;
+
        public:
         AdminLoginForm(void) {
             InitializeComponent();
             //
             // TODO: Add the constructor code here
             //
+        }
+
+        AdminLoginForm(IChildHost ^ parent) {
+            this->parent = parent;
+            InitializeComponent();
         }
 
        protected:
@@ -175,6 +183,7 @@ namespace icpproject {
             this->AutoScaleDimensions = System::Drawing::SizeF(6, 13);
             this->AutoScaleMode = System::Windows::Forms::AutoScaleMode::Font;
             this->ClientSize = System::Drawing::Size(557, 378);
+            this->ControlBox = false;
             this->Controls->Add(this->button1);
             this->Controls->Add(this->linkLabel1);
             this->Controls->Add(this->label3);
@@ -198,6 +207,8 @@ namespace icpproject {
         System::Void linkLabel1_LinkClicked(System::Object ^ sender,
                                             System::Windows::Forms::LinkLabelLinkClickedEventArgs ^ e) {
             Form ^ signUp = gcnew AdminSignUpForm(this);
+            signUp->MdiParent = this->MdiParent;
+            signUp->StartPosition = FormStartPosition::CenterScreen;
             signUp->Show();
             this->Hide();
         }
@@ -227,9 +238,8 @@ namespace icpproject {
                     if (res.status) {
                         MessageBox::Show("Logged in successfully");
                         auto user = res.data;
-                        auto mainForm = gcnew MainForm(user);
-                        mainForm->Show();
-                        this->Hide();
+                        parent->user = user;
+                        this->Close();
                     } else {
                         MessageBox::Show("Log in failed");
                     }
