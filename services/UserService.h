@@ -10,6 +10,7 @@ namespace icpproject {
 
     };*/
 
+   public
     ref class UserService {
        public:
         UserService(IUser ^ u) { user = u; }

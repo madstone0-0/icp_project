@@ -112,6 +112,7 @@ namespace icpproject {
             this->Controls->Add(this->studentLogin);
             this->Controls->Add(this->adminLogin);
             this->MaximizeBox = false;
+            this->MinimizeBox = false;
             this->Name = L"ChooseLoginForm";
             this->StartPosition = System::Windows::Forms::FormStartPosition::CenterScreen;
             this->Text = L"ChooseLoginForm";

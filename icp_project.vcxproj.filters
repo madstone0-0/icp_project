@@ -33,6 +33,12 @@
     <ClCompile Include="FacultyLoginForm.cpp">
       <Filter>Header Files</Filter>
     </ClCompile>
+    <ClCompile Include="AllCoursesForm.cpp">
+      <Filter>Header Files</Filter>
+    </ClCompile>
+    <ClCompile Include="EnumerationForm.cpp">
+      <Filter>Header Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="MainForm.h">
@@ -66,6 +72,15 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="FacultyLoginForm.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="AllCoursesForm.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="EnumerationService.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="EnumerationForm.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

@@ -130,7 +130,9 @@
   <ItemGroup>
     <ClCompile Include="AdminLoginForm.cpp" />
     <ClCompile Include="AdminSignUpForm.cpp" />
+    <ClCompile Include="AllCoursesForm.cpp" />
     <ClCompile Include="ChooseLoginForm.cpp" />
+    <ClCompile Include="EnumerationForm.cpp" />
     <ClCompile Include="FacultyLoginForm.cpp" />
     <ClCompile Include="MainForm.cpp" />
     <ClCompile Include="StudentLoginForm.cpp" />
@@ -142,10 +144,17 @@
     <ClInclude Include="AdminSignUpForm.h">
       <FileType>CppForm</FileType>
     </ClInclude>
+    <ClInclude Include="AllCoursesForm.h">
+      <FileType>CppForm</FileType>
+    </ClInclude>
     <ClInclude Include="ChooseLoginForm.h">
       <FileType>CppForm</FileType>
     </ClInclude>
     <ClInclude Include="db\Database.h" />
+    <ClInclude Include="EnumerationForm.h">
+      <FileType>CppForm</FileType>
+    </ClInclude>
+    <ClInclude Include="EnumerationService.h" />
     <ClInclude Include="FacultyLoginForm.h">
       <FileType>CppForm</FileType>
     </ClInclude>
@@ -167,8 +176,14 @@
     <EmbeddedResource Include="AdminSignUpForm.resx">
       <DependentUpon>AdminSignUpForm.h</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="AllCoursesForm.resx">
+      <DependentUpon>AllCoursesForm.h</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="ChooseLoginForm.resx">
       <DependentUpon>ChooseLoginForm.h</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="EnumerationForm.resx">
+      <DependentUpon>EnumerationForm.h</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="FacultyLoginForm.resx">
       <DependentUpon>FacultyLoginForm.h</DependentUpon>
