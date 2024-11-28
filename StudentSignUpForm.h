@@ -1,6 +1,6 @@
 #pragma once
 #include "./utils.h"
-#include "services/RegistrationService.h"
+#include "services/UserService.h"
 
 namespace icpproject {
 
@@ -209,4 +209,39 @@ namespace icpproject {
             // 
             // StudentSignUpForm
             // 
-           
+            this->ClientSize = System::Drawing::Size(478, 358);
+            this->Controls->Add(this->linkLabel1);
+            this->Controls->Add(this->confirmPasswordTB);
+            this->Controls->Add(this->passwordTB);
+            this->Controls->Add(this->emailTB);
+            this->Controls->Add(this->lastNameTB);
+            this->Controls->Add(this->firstNameTB);
+            this->Controls->Add(this->label5);
+            this->Controls->Add(this->label4);
+            this->Controls->Add(this->label3);
+            this->Controls->Add(this->label2);
+            this->Controls->Add(this->label1);
+            this->Controls->Add(this->signUpButton);
+            this->Controls->Add(this->button1);
+            this->Name = L"StudentSignUpForm";
+            this->Text = L"Student Sign Up";
+            this->ResumeLayout(false);
+            this->PerformLayout();
+
+        }
+#pragma endregion
+
+       private:
+        // Event handler for signUpButton click
+        void signUpButton_Click(System::Object^ sender, System::EventArgs^ e) {
+            // Handle sign-up logic here, including validation and calling registration services
+            String^ firstName = firstNameTB->Text;
+            String^ lastName = lastNameTB->Text;
+            String^ email = emailTB->Text;
+            String^ password = passwordTB->Text;
+            String^ confirmPassword = confirmPasswordTB->Text;
+
+            // You can now implement registration logic or call RegistrationService here
+        }
+    };
+}
