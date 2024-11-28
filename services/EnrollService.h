@@ -50,6 +50,58 @@ namespace icpproject {
 
     ref class EnrollService : public UserService {
        private:
+        value struct RequireRes {
+            bool status;
+            List<Course> ^ required;
+        };
+
+        RequireRes meetsRequirements(long long uid, long long cid) {
+            MySqlDataReader ^ reader = nullptr;
+            try {
+                STR query = R"(
+SELECT
+    preqid ,
+    cname,
+    credits,
+    sem,
+    capacity
+FROM
+    prerequisites p
+JOIN course c ON
+    p.preqid = c.cid
+WHERE
+    p.cid = {0};
+)";
+                reader = db::Ins()->execute(String::Format(query, cid));
+                List<Course> ^ required = gcnew List<Course>(0);
+                while (reader->Read()) {
+                    auto preqid = Convert::ToInt64(reader->GetBodyDefinition("preqid"));
+                    auto cname = reader->GetBodyDefinition("cname");
+                    auto credits = Convert::ToDouble(reader->GetBodyDefinition("credits"));
+                    auto sem = parseStrSemester(reader->GetBodyDefinition("sem"));
+                    auto capacity = Convert::ToInt32(reader->GetBodyDefinition("capacity"));
+                    required->Add(Course(preqid, cname, credits, sem, capacity, gcnew PreReqList(0)));
+                }
+
+                List<Course> ^ requiredRes = gcnew List<Course>(0);
+                for each (auto preReq in required) {
+                    if (!isAlreadyEnrolled(uid, preReq.cid)) {
+                        requiredRes->Add(preReq);
+                    }
+                }
+
+                if (requiredRes->Count != 0) {
+                    return {false, requiredRes};
+                }
+
+                return {true, requiredRes};
+            } finally {
+                if (reader != nullptr) {
+                    reader->Close();
+                }
+            }
+        }
+
         bool isAlreadyEnrolled(long long uid, long long cid) {
             MySqlDataReader ^ reader = nullptr;
             try {
@@ -88,17 +140,20 @@ namespace icpproject {
        public:
         EnrollService(IUser ^ user) : UserService{user} {}
 
-        ServiceReturn<Enrollment ^> GetByUId(long long uid) {
+        ServiceReturn<List<Enrollment> ^> GetByUId(long long uid) {
             MySqlDataReader ^ reader = nullptr;
             try {
                 reader = db::Ins()->execute(String::Format("select * from enrollment where uid = {0}", uid));
-                auto eid = Convert::ToInt64(reader->GetBodyDefinition("eid"));
-                auto cid = Convert::ToInt64(reader->GetBodyDefinition("cid"));
-                auto sem = parseStrSemester(reader->GetBodyDefinition("sem"));
-                auto grade = parseStrGrade(reader->GetBodyDefinition("grade"));
+                List<Enrollment> ^ dt = gcnew List<Enrollment>(0);
+                while (reader->Read()) {
+                    auto eid = Convert::ToInt64(reader->GetBodyDefinition("eid"));
+                    auto cid = Convert::ToInt64(reader->GetBodyDefinition("cid"));
+                    auto sem = parseStrSemester(reader->GetBodyDefinition("sem"));
+                    auto grade = parseStrGrade(reader->GetBodyDefinition("grade"));
+                    dt->Add(Enrollment(eid, uid, cid, sem, grade));
+                }
 
-                auto enrollment = gcnew Enrollment(eid, uid, cid, sem, grade);
-                return {true, enrollment};
+                return {true, dt};
             } finally {
                 if (reader != nullptr) {
                     reader->Close();
@@ -119,6 +174,23 @@ namespace icpproject {
 
                 Audit::Ins()->Log("Viewed enrollment", user->UID, "Enrollment ID: " + eid);
                 return {true, enrollment};
+            } finally {
+                if (reader != nullptr) {
+                    reader->Close();
+                }
+            }
+        }
+
+        ServiceReturn<DataTable ^> GetAllEnrolledIn(long long cid, Semester sem) {
+            MySqlDataReader ^ reader = nullptr;
+            try {
+                reader = db::Ins()->execute(
+                    String::Format("select * from enrollment where cid = {0} and sem = {1}", cid, parseSemester(sem)));
+                DataTable ^ dt = gcnew DataTable();
+                dt->Load(reader);
+
+                Audit::Ins()->Log("Viewed all enrollments in course", user->UID, "Course ID: " + cid);
+                return {true, dt};
             } finally {
                 if (reader != nullptr) {
                     reader->Close();
@@ -151,6 +223,16 @@ namespace icpproject {
                 }
 
                 checkCapacity(newEnrollment.cid);
+
+                auto reqRes = meetsRequirements(newEnrollment.uid, newEnrollment.cid);
+                if (!reqRes.status) {
+                    STR msg = "User does not meet the following prerequisites: ";
+                    for each (auto course in reqRes.required) {
+                        msg += course.cname + "\n";
+                    }
+                    errorMsg(msg, "EnrollService");
+                    throw gcnew Exception(msg);
+                }
 
                 params->Add("@uid", newEnrollment.uid);
                 params->Add("@cid", newEnrollment.cid);

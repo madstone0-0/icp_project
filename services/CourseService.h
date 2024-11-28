@@ -123,6 +123,64 @@ namespace icpproject {
             }
         }
 
+        ServiceReturn<List<Course> ^> GetByFaculty(long long uid) {
+            MySqlDataReader ^ reader = nullptr;
+            try {
+                STR query = R"(
+SELECT
+    course.cid AS CID,
+    course.cname AS Course_Name,
+    course.credits AS Credits,
+    course.sem AS Semester,
+    course.capacity AS Capacity
+FROM
+    course
+INNER JOIN course_faculty ON
+    course.cid = course_faculty.cid
+INNER JOIN faculty ON
+    course_faculty.uid = faculty.uid
+WHERE
+    faculty.uid = {0};
+)";
+                reader = db::Ins()->execute(String::Format(query, uid));
+                List<Course> ^ courses = gcnew List<Course>(0);
+                while (reader->Read()) {
+                    auto cid = Convert::ToInt32(reader->GetBodyDefinition("CID"));
+                    auto cname = reader->GetBodyDefinition("Course_Name");
+                    auto credits = Convert::ToDouble(reader->GetBodyDefinition("Credits"));
+                    auto sem = parseStrSemester(reader->GetBodyDefinition("Semester"));
+                    auto capacity = Convert::ToInt32(reader->GetBodyDefinition("Capacity"));
+                    courses->Add(Course(cid, cname, credits, sem, capacity));
+                }
+
+                Audit::Ins()->Log("Viewed courses by faculty", user->UID, "Faculty ID: " + uid);
+                return {true, courses};
+            } finally {
+                if (reader != nullptr) {
+                    reader->Close();
+                }
+            }
+        }
+
+        ServiceReturn<STR> AssignFaculty(long long uid, long long cid) {
+            MySqlDataReader ^ reader = nullptr;
+            try {
+                if (!doesCourseExistId(cid)) {
+                    throw gcnew Exception("Course does not exist");
+                }
+
+                db::Ins()->executeNoRet(
+                    String::Format("insert into course_faculty (cid, uid) values ({0}, {1})", cid, uid));
+
+                Audit::Ins()->Log("Assigned faculty to course", user->UID, "Faculty ID: " + uid + " Course ID: " + cid);
+                return {true, "Faculty assigned to course"};
+            } finally {
+                if (reader != nullptr) {
+                    reader->Close();
+                }
+            }
+        }
+
         ServiceReturn<DataTable ^> GetAll() {
             MySqlDataReader ^ reader = nullptr;
             try {

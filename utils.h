@@ -8,7 +8,13 @@ using namespace System::Collections::Generic;
 using namespace System::Security::Cryptography;
 using namespace System::Text;
 using namespace System::Text::RegularExpressions;
+using namespace System::Windows::Forms;
+using namespace MySql::Data::MySqlClient;
+
 using STR = String ^ ;
+
+using Picture = cli::array<Byte>;
+using PictureH = Picture ^ ;
 
 namespace icpproject {
     using STR = String ^ ;
@@ -42,6 +48,18 @@ inline STR parseDept(const Department& dept) {
         case Department::BA:
             return "BA";
             break;
+    }
+}
+
+inline bool doesExist(STR query) {
+    MySqlDataReader ^ reader = nullptr;
+    try {
+        reader = db::Ins()->execute(query);
+        return reader->HasRows;
+    } finally {
+        if (reader != nullptr) {
+            reader->Close();
+        }
     }
 }
 
@@ -156,6 +174,34 @@ inline Grade parseStrGrade(STR grade) {
     if (grade == "F") return Grade::F;
 }
 
+inline STR parseDay(Day day) {
+    switch (day) {
+        case Day::Monday:
+            return "Monday";
+            break;
+        case Day::Tuesday:
+            return "Tuesday";
+            break;
+        case Day::Wednesday:
+            return "Wednesday";
+            break;
+        case Day::Thursday:
+            return "Thursday";
+            break;
+        case Day::Friday:
+            return "Friday";
+            break;
+    }
+}
+
+inline System::Windows::Forms::Day parseStrDay(STR day) {
+    if (day == "Monday") return Day::Monday;
+    if (day == "Tuesday") return Day::Tuesday;
+    if (day == "Wednesday") return Day::Wednesday;
+    if (day == "Thursday") return Day::Thursday;
+    if (day == "Friday") return Day::Friday;
+}
+
 public
 interface class IUser {
     property int UID {
@@ -218,6 +264,8 @@ value struct User : public IUser {
         email = e;
     }
 };
+
+inline STR formatDateTimeAsMySQLTime(DateTime dt) { return dt.ToString("HH:mm:ss"); }
 
 inline STR toNETString(const std::string& str) { return gcnew String(str.c_str()); }
 

@@ -4,7 +4,7 @@
 
 #include "../db/Database.h"
 #include "../utils.h"
-#include "./AuditService.h"
+#include "AuditService.h"
 
 namespace icpproject {
     using namespace std;
@@ -64,9 +64,6 @@ namespace icpproject {
             }
         }
     }
-
-    using Picture = cli::array<Byte>;
-    using PictureH = Picture ^ ;
 
    public
     value struct Admin : public IUser {

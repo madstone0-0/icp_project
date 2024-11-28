@@ -18,26 +18,29 @@
     <ClCompile Include="MainForm.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="AdminSignUpForm.cpp">
+    <ClCompile Include="forms\AdminSignUpForm.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="AdminLoginForm.cpp">
+    <ClCompile Include="forms\AdminLoginForm.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="ChooseLoginForm.cpp">
+    <ClCompile Include="forms\ChooseLoginForm.cpp">
       <Filter>Header Files</Filter>
     </ClCompile>
     <ClCompile Include="StudentLoginForm.cpp">
       <Filter>Header Files</Filter>
     </ClCompile>
-    <ClCompile Include="FacultyLoginForm.cpp">
+    <ClCompile Include="forms\FacultyLoginForm.cpp">
       <Filter>Header Files</Filter>
     </ClCompile>
-    <ClCompile Include="AllCoursesForm.cpp">
+    <ClCompile Include="forms\AllCoursesForm.cpp">
       <Filter>Header Files</Filter>
     </ClCompile>
-    <ClCompile Include="EnumerationForm.cpp">
+    <ClCompile Include="forms\EnumerationForm.cpp">
       <Filter>Header Files</Filter>
+    </ClCompile>
+    <ClCompile Include="StudentProfileForm.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -77,10 +80,25 @@
     <ClInclude Include="AllCoursesForm.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="EnumerationService.h">
+    <ClInclude Include="services\EnumerationService.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="EnumerationForm.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Tests.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="services\FacultyActionsService.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="services\ScheduleService.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="StudentProfileForm.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="services\PaymentsService.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
