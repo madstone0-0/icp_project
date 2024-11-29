@@ -286,7 +286,7 @@ namespace icpproject {
             this->label3->Font =
                 (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 14.25F, System::Drawing::FontStyle::Bold,
                                              System::Drawing::GraphicsUnit::Point, static_cast<System::Byte>(0)));
-            this->label3->Location = System::Drawing::Point(8, 184);
+            this->label3->Location = System::Drawing::Point(8, 240);
             this->label3->Name = L"label3";
             this->label3->Size = System::Drawing::Size(129, 24);
             this->label3->TabIndex = 8;
@@ -301,7 +301,7 @@ namespace icpproject {
             this->label4->Font =
                 (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 14.25F, System::Drawing::FontStyle::Bold,
                                              System::Drawing::GraphicsUnit::Point, static_cast<System::Byte>(0)));
-            this->label4->Location = System::Drawing::Point(8, 240);
+            this->label4->Location = System::Drawing::Point(8, 184);
             this->label4->Name = L"label4";
             this->label4->Size = System::Drawing::Size(119, 24);
             this->label4->TabIndex = 9;

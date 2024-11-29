@@ -17,12 +17,12 @@ namespace icpproject {
     ref class EnumerationForm : public System::Windows::Forms::Form {
        private:
         STR title;
-        DataTable ^ dt;
+        Object ^ dataSource;
 
        public:
-        EnumerationForm(STR t, DataTable ^ data) {
+        EnumerationForm(STR t, Object ^ data) {
             title = t;
-            dt = data;
+            dataSource = data;
             InitializeComponent();
         }
 
@@ -107,7 +107,7 @@ namespace icpproject {
        private:
         System::Void EnumerationForm_Load(System::Object ^ sender, System::EventArgs ^ e) {
             label1->Text = title;
-            GV->DataSource = dt;
+            GV->DataSource = dataSource;
         }
     };
 }  // namespace icpproject

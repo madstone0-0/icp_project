@@ -11,18 +11,16 @@ namespace icpproject {
     using namespace System::Data;
     using namespace System::Collections::Generic;
 
-    ref class FacultyActionService : public UserService {
-        FacultyActionService(IUser ^ user) : UserService{user} {}
+    ref class StudentActionService : public UserService {
+        StudentActionService(IUser ^ user) : UserService{user} {}
 
-        ServiceReturn<DataTable ^> GetAllUnGraded(long long cid) {
+        ServiceReturn<DataTable ^> GetTranscript() {
             MySqlDataReader ^ reader = nullptr;
             try {
-                reader = db::Ins()->execute(
-                    String::Format("select * from enrollment where grade is null or grade = 'NG' and cid = {0}", cid));
+                reader = db::Ins()->execute(String::Format("select * from enrollment where uid = {0}", user->UID));
                 DataTable ^ dt = gcnew DataTable();
                 dt->Load(reader);
                 reader->Close();
-
                 return {true, dt};
             } finally {
                 if (reader != nullptr) {

@@ -1,7 +1,9 @@
 #pragma once
 #include <iostream>
 
+#include "AddCourseForm.h"
 #include "ChooseLoginForm.h"
+#include "EnrollForm.h"
 #include "EnumerationForm.h"
 #include "StudentProfileForm.h"
 #include "db/Database.h"
@@ -183,8 +185,8 @@ namespace icpproject {
             this->adminToolStripMenuItem = (gcnew System::Windows::Forms::ToolStripMenuItem());
             this->coursesToolStripMenuItem = (gcnew System::Windows::Forms::ToolStripMenuItem());
             this->allCoursesToolStripMenuItem1 = (gcnew System::Windows::Forms::ToolStripMenuItem());
-            this->managePrerequistesToolStripMenuItem = (gcnew System::Windows::Forms::ToolStripMenuItem());
             this->addCourseToolStripMenuItem = (gcnew System::Windows::Forms::ToolStripMenuItem());
+            this->managePrerequistesToolStripMenuItem = (gcnew System::Windows::Forms::ToolStripMenuItem());
             this->facultyToolStripMenuItem2 = (gcnew System::Windows::Forms::ToolStripMenuItem());
             this->assignCourseToolStripMenuItem = (gcnew System::Windows::Forms::ToolStripMenuItem());
             this->viewCourseAssignmentsToolStripMenuItem = (gcnew System::Windows::Forms::ToolStripMenuItem());
@@ -205,11 +207,11 @@ namespace icpproject {
             this->courseToolStripMenuItem = (gcnew System::Windows::Forms::ToolStripMenuItem());
             this->viewEnrolledCoursesToolStripMenuItem = (gcnew System::Windows::Forms::ToolStripMenuItem());
             this->enrollInCourseToolStripMenuItem = (gcnew System::Windows::Forms::ToolStripMenuItem());
+            this->viewScheduleToolStripMenuItem1 = (gcnew System::Windows::Forms::ToolStripMenuItem());
             this->feesToolStripMenuItem = (gcnew System::Windows::Forms::ToolStripMenuItem());
             this->facultyToolStripMenuItem = (gcnew System::Windows::Forms::ToolStripMenuItem());
             this->logoutToolStripMenuItem = (gcnew System::Windows::Forms::ToolStripMenuItem());
             this->bindingSource1 = (gcnew System::Windows::Forms::BindingSource(this->components));
-            this->viewScheduleToolStripMenuItem1 = (gcnew System::Windows::Forms::ToolStripMenuItem());
             this->menuStrip1->SuspendLayout();
             (cli::safe_cast<System::ComponentModel::ISupportInitialize ^>(this->bindingSource1))->BeginInit();
             this->SuspendLayout();
@@ -239,8 +241,8 @@ namespace icpproject {
             //
             this->coursesToolStripMenuItem->DropDownItems->AddRange(
                 gcnew cli::array<System::Windows::Forms::ToolStripItem ^>(5){
-                    this->allCoursesToolStripMenuItem1, this->managePrerequistesToolStripMenuItem,
-                    this->addCourseToolStripMenuItem, this->facultyToolStripMenuItem2,
+                    this->allCoursesToolStripMenuItem1, this->addCourseToolStripMenuItem,
+                    this->managePrerequistesToolStripMenuItem, this->facultyToolStripMenuItem2,
                     this->studentToolStripMenuItem1});
             this->coursesToolStripMenuItem->Name = L"coursesToolStripMenuItem";
             this->coursesToolStripMenuItem->Size = System::Drawing::Size(131, 22);
@@ -254,6 +256,14 @@ namespace icpproject {
             this->allCoursesToolStripMenuItem1->Click +=
                 gcnew System::EventHandler(this, &MainForm::allCoursesToolStripMenuItem1_Click);
             //
+            // addCourseToolStripMenuItem
+            //
+            this->addCourseToolStripMenuItem->Name = L"addCourseToolStripMenuItem";
+            this->addCourseToolStripMenuItem->Size = System::Drawing::Size(187, 22);
+            this->addCourseToolStripMenuItem->Text = L"Add Course";
+            this->addCourseToolStripMenuItem->Click +=
+                gcnew System::EventHandler(this, &MainForm::addCourseToolStripMenuItem_Click);
+            //
             // managePrerequistesToolStripMenuItem
             //
             this->managePrerequistesToolStripMenuItem->Name = L"managePrerequistesToolStripMenuItem";
@@ -261,12 +271,6 @@ namespace icpproject {
             this->managePrerequistesToolStripMenuItem->Text = L"Manage Prerequisites";
             this->managePrerequistesToolStripMenuItem->Click +=
                 gcnew System::EventHandler(this, &MainForm::managePrerequistesToolStripMenuItem_Click);
-            //
-            // addCourseToolStripMenuItem
-            //
-            this->addCourseToolStripMenuItem->Name = L"addCourseToolStripMenuItem";
-            this->addCourseToolStripMenuItem->Size = System::Drawing::Size(187, 22);
-            this->addCourseToolStripMenuItem->Text = L"Add Course";
             //
             // facultyToolStripMenuItem2
             //
@@ -335,6 +339,8 @@ namespace icpproject {
             this->enrollmentsToolStripMenuItem->Name = L"enrollmentsToolStripMenuItem";
             this->enrollmentsToolStripMenuItem->Size = System::Drawing::Size(137, 22);
             this->enrollmentsToolStripMenuItem->Text = L"Enrollments";
+            this->enrollmentsToolStripMenuItem->Click +=
+                gcnew System::EventHandler(this, &MainForm::enrollmentsToolStripMenuItem_Click);
             //
             // paymentsToolStripMenuItem
             //
@@ -410,12 +416,22 @@ namespace icpproject {
             this->viewEnrolledCoursesToolStripMenuItem->Name = L"viewEnrolledCoursesToolStripMenuItem";
             this->viewEnrolledCoursesToolStripMenuItem->Size = System::Drawing::Size(190, 22);
             this->viewEnrolledCoursesToolStripMenuItem->Text = L"View Enrolled Courses";
+            this->viewEnrolledCoursesToolStripMenuItem->Click +=
+                gcnew System::EventHandler(this, &MainForm::viewEnrolledCoursesToolStripMenuItem_Click);
             //
             // enrollInCourseToolStripMenuItem
             //
             this->enrollInCourseToolStripMenuItem->Name = L"enrollInCourseToolStripMenuItem";
             this->enrollInCourseToolStripMenuItem->Size = System::Drawing::Size(190, 22);
             this->enrollInCourseToolStripMenuItem->Text = L"Enroll In Course";
+            this->enrollInCourseToolStripMenuItem->Click +=
+                gcnew System::EventHandler(this, &MainForm::enrollInCourseToolStripMenuItem_Click);
+            //
+            // viewScheduleToolStripMenuItem1
+            //
+            this->viewScheduleToolStripMenuItem1->Name = L"viewScheduleToolStripMenuItem1";
+            this->viewScheduleToolStripMenuItem1->Size = System::Drawing::Size(190, 22);
+            this->viewScheduleToolStripMenuItem1->Text = L"View Schedule";
             //
             // feesToolStripMenuItem
             //
@@ -436,12 +452,6 @@ namespace icpproject {
             this->logoutToolStripMenuItem->Text = L"Logout";
             this->logoutToolStripMenuItem->Click +=
                 gcnew System::EventHandler(this, &MainForm::logoutToolStripMenuItem_Click);
-            //
-            // viewScheduleToolStripMenuItem1
-            //
-            this->viewScheduleToolStripMenuItem1->Name = L"viewScheduleToolStripMenuItem1";
-            this->viewScheduleToolStripMenuItem1->Size = System::Drawing::Size(190, 22);
-            this->viewScheduleToolStripMenuItem1->Text = L"View Schedule";
             //
             // MainForm
             //
@@ -631,6 +641,75 @@ namespace icpproject {
                 profileForm->StartPosition = FormStartPosition::CenterScreen;
                 profileForm->Show();
 
+            } catch (Exception ^ e) {
+                errorMsg(e->Message);
+                MessageBox::Show(e->Message);
+            }
+        }
+
+       private:
+        System::Void addCourseToolStripMenuItem_Click(System::Object ^ sender, System::EventArgs ^ e) {
+            try {
+                AddCourseForm ^ courseForm = gcnew AddCourseForm(this);
+                courseForm->MdiParent = this;
+                courseForm->StartPosition = FormStartPosition::CenterScreen;
+                courseForm->Show();
+            } catch (Exception ^ e) {
+                errorMsg(e->Message);
+                MessageBox::Show(e->Message);
+            }
+        }
+
+       private:
+        System::Void enrollmentsToolStripMenuItem_Click(System::Object ^ sender, System::EventArgs ^ e) {
+            try {
+                EnrollService ^ service = gcnew EnrollService(user);
+                auto res = service->GetAll();
+                if (res.status) {
+                    EnumerationForm ^ enumForm = gcnew EnumerationForm("Enrollments", res.data);
+                    enumForm->MdiParent = this;
+                    enumForm->StartPosition = FormStartPosition::CenterScreen;
+                    enumForm->Show();
+                }
+            } catch (Exception ^ e) {
+                errorMsg(e->Message);
+                MessageBox::Show(e->Message);
+            }
+        }
+
+       private:
+        System::Void viewEnrolledCoursesToolStripMenuItem_Click(System::Object ^ sender, System::EventArgs ^ e) {
+            try {
+                EnrollService ^ service = gcnew EnrollService(user);
+                auto res = service->GetByUId(user->UID);
+                if (res.status) {
+                    DataTable ^ dt = gcnew DataTable();
+                    dt->Columns->Add("Course Name");
+                    dt->Columns->Add("Grade");
+                    dt->Columns->Add("Semester");
+                    dt->Columns->Add("Credits");
+                    for each (auto item in res.data) {
+                        dt->Rows->Add(item.cname, parseGrade(item.grade, true), parseSemester(item.sem),
+                                      Convert::ToString(item.credits));
+                    }
+                    EnumerationForm ^ enumForm = gcnew EnumerationForm("Enrolled Courses", dt);
+                    enumForm->MdiParent = this;
+                    enumForm->StartPosition = FormStartPosition::CenterScreen;
+                    enumForm->Show();
+                }
+            } catch (Exception ^ e) {
+                errorMsg(e->Message);
+                MessageBox::Show(e->Message);
+            }
+        }
+
+       private:
+        System::Void enrollInCourseToolStripMenuItem_Click(System::Object ^ sender, System::EventArgs ^ e) {
+            try {
+                EnrollForm ^ enrollForm = gcnew EnrollForm(this);
+                enrollForm->MdiParent = this;
+                enrollForm->StartPosition = FormStartPosition::CenterScreen;
+                enrollForm->Show();
             } catch (Exception ^ e) {
                 errorMsg(e->Message);
                 MessageBox::Show(e->Message);

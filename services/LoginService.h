@@ -143,45 +143,6 @@ namespace icpproject {
         };
     };
 
-   public
-    value struct Faculty : public IUser {
-        int uid;
-        STR fname;
-        STR lname;
-        STR email;
-        STR appDate;
-        Department dept;
-
-        virtual property int UID {
-            int get() { return uid; }
-            void set(int value) { uid = value; }
-        }
-
-        virtual property STR FirstName {
-            STR get() { return fname; }
-            void set(STR value) { fname = value; }
-        }
-
-        virtual property STR LastName {
-            STR get() { return lname; }
-            void set(STR value) { lname = value; }
-        }
-
-        virtual property STR Email {
-            STR get() { return email; }
-            void set(STR value) { email = value; }
-        }
-
-        Faculty(int u, STR f, STR l, STR e, STR a, Department d) {
-            uid = u;
-            fname = f;
-            lname = l;
-            email = e;
-            appDate = a;
-            dept = d;
-        };
-    };
-
     // Attempt at abstraction
     // public
     // interface class IUserService {

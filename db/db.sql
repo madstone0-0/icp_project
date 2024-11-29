@@ -117,7 +117,8 @@ create table enrollment (
     'E+',
     'E',
     'F+',
-    'F'
+    'F',
+    "NG"
   ),
   foreign key (uid) references student (uid) ON DELETE CASCADE,
   foreign key (cid) references course (cid) ON DELETE CASCADE

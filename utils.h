@@ -32,7 +32,17 @@ enum class Department { CS, HM, EN, BA };
 
 enum class Semester { S1, S2 };
 
-enum class Grade { A_plus, A, B, B_plus, C, C_plus, D, D_plus, E, E_plus, F_plus, F };
+enum class Grade { A_plus, A, B, B_plus, C, C_plus, D, D_plus, E, E_plus, F_plus, F, NG };
+
+inline STR trim(STR str) { return str->Trim(); }
+inline bool isEmpty(STR str) { return String::IsNullOrWhiteSpace(str); }
+
+inline bool isAnyEmpty(List<STR> ^ strs) {
+    for each (STR str in strs) {
+        if (isEmpty(str)) return true;
+    }
+    return false;
+}
 
 inline STR parseDept(const Department& dept) {
     switch (dept) {
@@ -48,18 +58,6 @@ inline STR parseDept(const Department& dept) {
         case Department::BA:
             return "BA";
             break;
-    }
-}
-
-inline bool doesExist(STR query) {
-    MySqlDataReader ^ reader = nullptr;
-    try {
-        reader = db::Ins()->execute(query);
-        return reader->HasRows;
-    } finally {
-        if (reader != nullptr) {
-            reader->Close();
-        }
     }
 }
 
@@ -118,7 +116,7 @@ inline Semester parseStrSemester(STR sem) {
     if (sem == "S2") return Semester::S2;
 }
 
-inline STR parseGrade(const Grade& grade) {
+inline STR parseGrade(const Grade& grade, bool pretty = false) {
     switch (grade) {
         case Grade::A_plus:
             return "A+";
@@ -156,6 +154,10 @@ inline STR parseGrade(const Grade& grade) {
         case Grade::F:
             return "F";
             break;
+        case Grade::NG:
+            if (pretty) return "Not Graded";
+            return "NG";
+            break;
     }
 }
 
@@ -172,6 +174,7 @@ inline Grade parseStrGrade(STR grade) {
     if (grade == "E+") return Grade::E_plus;
     if (grade == "F+") return Grade::F_plus;
     if (grade == "F") return Grade::F;
+    if (grade == "NG" || grade == "Not Graded") return Grade::NG;
 }
 
 inline STR parseDay(Day day) {
@@ -228,6 +231,45 @@ interface class IChildHost {
         IUser ^ get();
         void set(IUser ^ value);
     }
+};
+
+public
+value struct Faculty : public IUser {
+    long long uid;
+    STR fname;
+    STR lname;
+    STR email;
+    STR appDate;
+    Department dept;
+
+    virtual property int UID {
+        int get() { return uid; }
+        void set(int value) { uid = value; }
+    }
+
+    virtual property STR FirstName {
+        STR get() { return fname; }
+        void set(STR value) { fname = value; }
+    }
+
+    virtual property STR LastName {
+        STR get() { return lname; }
+        void set(STR value) { lname = value; }
+    }
+
+    virtual property STR Email {
+        STR get() { return email; }
+        void set(STR value) { email = value; }
+    }
+
+    Faculty(int u, STR f, STR l, STR e, STR a, Department d) {
+        uid = u;
+        fname = f;
+        lname = l;
+        email = e;
+        appDate = a;
+        dept = d;
+    };
 };
 
 public

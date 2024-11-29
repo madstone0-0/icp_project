@@ -48,6 +48,26 @@ namespace icpproject {
         }
     };
 
+    value struct EnrollmentWithCourseName {
+        long long eid;
+        long long uid;
+        long long cid;
+        STR cname;
+        Semester sem;
+        double credits;
+        Grade grade;
+
+        EnrollmentWithCourseName(long long e, long long u, long long c, STR cn, Semester s, Grade g, double cr) {
+            eid = e;
+            uid = u;
+            cid = c;
+            cname = cn;
+            sem = s;
+            grade = g;
+            credits = cr;
+        }
+    };
+
     ref class EnrollService : public UserService {
        private:
         value struct RequireRes {
@@ -140,17 +160,33 @@ WHERE
        public:
         EnrollService(IUser ^ user) : UserService{user} {}
 
-        ServiceReturn<List<Enrollment> ^> GetByUId(long long uid) {
+        ServiceReturn<List<EnrollmentWithCourseName> ^> GetByUId(long long uid) {
             MySqlDataReader ^ reader = nullptr;
             try {
-                reader = db::Ins()->execute(String::Format("select * from enrollment where uid = {0}", uid));
-                List<Enrollment> ^ dt = gcnew List<Enrollment>(0);
+                STR q = R"(
+SELECT
+e.cid,
+eid,
+    cname AS Course_Name,
+    credits AS Credits,
+    e.sem AS Semester,
+    grade AS Grade
+FROM
+    enrollment e
+INNER JOIN course c ON
+    e.cid = c.cid
+WHERE e.uid = {0}
+)";
+                reader = db::Ins()->execute(String::Format(q, uid));
+                List<EnrollmentWithCourseName> ^ dt = gcnew List<EnrollmentWithCourseName>(0);
                 while (reader->Read()) {
                     auto eid = Convert::ToInt64(reader->GetBodyDefinition("eid"));
                     auto cid = Convert::ToInt64(reader->GetBodyDefinition("cid"));
-                    auto sem = parseStrSemester(reader->GetBodyDefinition("sem"));
-                    auto grade = parseStrGrade(reader->GetBodyDefinition("grade"));
-                    dt->Add(Enrollment(eid, uid, cid, sem, grade));
+                    auto sem = parseStrSemester(reader->GetBodyDefinition("Semester"));
+                    auto grade = parseStrGrade(reader->GetBodyDefinition("Grade"));
+                    auto cname = reader->GetBodyDefinition("Course_Name");
+                    auto credits = Convert::ToDouble(reader->GetBodyDefinition("Credits"));
+                    dt->Add(EnrollmentWithCourseName(eid, uid, cid, cname, sem, grade, credits));
                 }
 
                 return {true, dt};
@@ -201,7 +237,21 @@ WHERE
         ServiceReturn<DataTable ^> GetAll() {
             MySqlDataReader ^ reader = nullptr;
             try {
-                reader = db::Ins()->execute("select * from enrollment");
+                STR query = R"(
+SELECT
+    eid AS EID,
+    uid AS UID,
+    e.cid AS CID,
+    cname AS Course_Name,
+    credits AS Credits,
+    e.sem AS Semester,
+    grade AS Grade
+FROM
+    enrollment e
+INNER JOIN course c ON
+    e.cid = c.cid
+)";
+                reader = db::Ins()->execute(query);
                 DataTable ^ dt = gcnew DataTable();
                 dt->Load(reader);
 

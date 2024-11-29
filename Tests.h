@@ -4,6 +4,7 @@
 #include "./utils.h"
 #include "db/Database.h"
 #include "services/CourseService.h"
+#include "services/EnrollService.h"
 #include "services/LoginService.h"
 
 namespace icpproject {
@@ -109,7 +110,7 @@ namespace icpproject {
         auto getPrereqCourses = [&](CourseService ^ courseService) {
             auto prereqResult = courseService->GetPrereqCourses(addedCourseId);
             assert(prereqResult.status, "Get prerequisite courses failed");
-            assert(prereqResult.data->Length > 0, "No prerequisite courses found");
+            assert(prereqResult.data->Count > 0, "No prerequisite courses found");
             debugMsg("Retrieved prerequisite courses successfully", "CourseServiceTest");
         };
 
@@ -132,6 +133,28 @@ namespace icpproject {
             infoMsg("All CourseService Tests Passed", "CourseServiceTest");
         } catch (Exception ^ e) {
             errorMsg("CourseService Test failed: " + e->Message, "CourseServiceTest");
+            throw;
+        }
+    }
+
+    inline void EnrollServiceTest() {
+        StudentService ^ studentService = gcnew StudentService();
+        auto res = studentService->Login(LoginUser{"mstu@gmail.com", "madiba123"});
+        assert(res.status, "Student login failed");
+        EnrollService ^ service = gcnew EnrollService(res.data);
+
+        auto enrollInCourse = [&](EnrollService ^ s, long long uid) {
+            auto res = s->Enroll(NewEnrollment{uid, 1, Semester::S1, Grade::NG});
+            assert(res.status, "Enrollment failed");
+            debugMsg("Enrolled in course successfully", "EnrollServiceTest");
+        };
+
+        try {
+            enrollInCourse(service, res.data->UID);
+
+            infoMsg("All EnrollService Tests Passed", "EnrollServiceTest");
+        } catch (Exception ^ e) {
+            errorMsg("EnrollService Test failed: " + e->Message, "EnrollServiceTest");
             throw;
         }
     }

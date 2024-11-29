@@ -142,3 +142,15 @@ namespace icpproject {
 }  // namespace icpproject
 
 using db = icpproject::Database;
+
+inline bool doesExist(STR query) {
+    MySqlDataReader ^ reader = nullptr;
+    try {
+        reader = db::Ins()->execute(query);
+        return reader->HasRows;
+    } finally {
+        if (reader != nullptr) {
+            reader->Close();
+        }
+    }
+}

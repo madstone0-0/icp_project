@@ -11,8 +11,9 @@ int main(cli::array<System::String ^> ^ args) {
     Application::EnableVisualStyles();
     Application::SetCompatibleTextRenderingDefault(false);
 
-    /*LoginServiceTest();
-    CourseServiceTest();*/
+    // LoginServiceTest();
+    // CourseServiceTest();
+    // EnrollServiceTest();
 
     // icpproject::AdminLoginForm form;
     icpproject::MainForm form;

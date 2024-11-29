@@ -51,6 +51,8 @@ namespace icpproject {
         int capacity;
         PreReqList ^ prereqs;
 
+        operator STR() { return cname; }
+
         Course(int c, STR cn, double cr, Semester s, int cap, PreReqList ^ p) {
             cid = c;
             cname = cn;
@@ -174,6 +176,72 @@ WHERE
 
                 Audit::Ins()->Log("Assigned faculty to course", user->UID, "Faculty ID: " + uid + " Course ID: " + cid);
                 return {true, "Faculty assigned to course"};
+            } finally {
+                if (reader != nullptr) {
+                    reader->Close();
+                }
+            }
+        }
+
+        ServiceReturn<Faculty ^> GetTeachingFaculty(long long cid) {
+            MySqlDataReader ^ reader = nullptr;
+            try {
+                if (!doesCourseExistId(cid)) {
+                    throw gcnew Exception("Course does not exist");
+                }
+                STR q = R"(
+SELECT
+    f.uid,
+    c.cid,
+    fname AS "First Name",
+    lname AS "Last Name",
+email AS "Email",
+    dept AS "Department",
+    appdate AS "Appointment Date"
+FROM
+    faculty f
+INNER JOIN course_faculty cf ON
+    cf.uid = f.uid
+INNER JOIN course c ON
+    c.cid = cf.cid
+INNER JOIN `user` u ON
+    u.uid = f.uid 
+    WHERE c.cid = {0};
+)";
+                reader = db::Ins()->execute(String::Format(q, cid));
+                reader->Read();
+                if (!reader->HasRows) return {true, gcnew Faculty(-1, "N/A", "N/A", "N/A", "N/A", Department::CS)};
+
+                auto uid = Convert::ToInt64(reader->GetBodyDefinition("uid"));
+                auto fname = reader->GetBodyDefinition("First Name");
+                auto lname = reader->GetBodyDefinition("Last Name");
+                auto email = reader->GetBodyDefinition("Email");
+                auto dept = parseStrDept(reader->GetBodyDefinition("Department"));
+                auto appdate = reader->GetBodyDefinition("Appointment Date");
+
+                return {true, gcnew Faculty(uid, fname, lname, email, appdate, dept)};
+            } finally {
+                if (reader != nullptr) {
+                    reader->Close();
+                }
+            }
+        }
+
+        ServiceReturn<STR> GetAll(List<Course> ^ % courses) {
+            MySqlDataReader ^ reader = nullptr;
+            try {
+                reader = db::Ins()->execute("select * from course");
+                while (reader->Read()) {
+                    auto cid = Convert::ToInt32(reader->GetBodyDefinition("cid"));
+                    auto cname = reader->GetBodyDefinition("cname");
+                    auto credits = Convert::ToDouble(reader->GetBodyDefinition("credits"));
+                    auto sem = parseStrSemester(reader->GetBodyDefinition("sem"));
+                    auto capacity = Convert::ToInt32(reader->GetBodyDefinition("capacity"));
+                    courses->Add(Course(cid, cname, credits, sem, capacity));
+                }
+
+                Audit::Ins()->Log("Viewed all courses", user->UID);
+                return {true, "Retrived all courses"};
             } finally {
                 if (reader != nullptr) {
                     reader->Close();
@@ -324,27 +392,28 @@ WHERE
             }
         }
 
-        ServiceReturn<cli::array<Course> ^> GetPrereqCourses(long long cid) {
+        ServiceReturn<List<Course> ^> GetPrereqCourses(long long cid) {
             MySqlDataReader ^ reader = nullptr;
             try {
                 if (!doesCourseExistId(cid)) {
                     throw gcnew Exception("Course does not exist");
                 }
 
-                cli::array<Course> ^ courses = gcnew cli::array<Course>(0);
+                List<Course> ^ courses = gcnew List<Course>(0);
                 reader = db::Ins()->execute(
                     "select * from course where cid in (select preqid from prerequisites where cid = " + cid + ")");
-                reader->Read();
-                auto cid = Convert::ToInt32(reader->GetBodyDefinition("cid"));
-                auto cname = reader->GetBodyDefinition("cname");
-                auto credits = Convert::ToDouble(reader->GetBodyDefinition("credits"));
-                auto sem = parseStrSemester(reader->GetBodyDefinition("sem"));
-                auto capacity = Convert::ToInt32(reader->GetBodyDefinition("capacity"));
+                if (!reader->HasRows) {
+                    return {true, courses};
+                }
 
                 while (reader->Read()) {
+                    auto cid = Convert::ToInt32(reader->GetBodyDefinition("cid"));
+                    auto cname = reader->GetBodyDefinition("cname");
+                    auto credits = Convert::ToDouble(reader->GetBodyDefinition("credits"));
+                    auto sem = parseStrSemester(reader->GetBodyDefinition("sem"));
+                    auto capacity = Convert::ToInt32(reader->GetBodyDefinition("capacity"));
                     auto c = Course(cid, cname, credits, sem, capacity);
-                    Array::Resize(courses, courses->Length + 1);
-                    courses[courses->Length - 1] = c;
+                    courses->Add(c);
                 }
 
                 Audit::Ins()->Log("Viewed prerequisite courses", user->UID, "Course ID: " + cid);

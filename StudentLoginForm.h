@@ -1,5 +1,6 @@
 #pragma once
 #include "./utils.h"
+// #include "StudentSignUpForm.h"
 #include "services/LoginService.h"
 
 namespace icpproject {
@@ -107,6 +108,8 @@ namespace icpproject {
             this->linkLabel1->TabIndex = 14;
             this->linkLabel1->TabStop = true;
             this->linkLabel1->Text = L"Don\'t have an account\? Sign Up";
+            this->linkLabel1->LinkClicked += gcnew System::Windows::Forms::LinkLabelLinkClickedEventHandler(
+                this, &StudentLoginForm::linkLabel1_LinkClicked);
             //
             // label3
             //
@@ -222,6 +225,20 @@ namespace icpproject {
                 }
 
             } catch (Exception ^ e) {
+                MessageBox::Show(e->Message);
+            }
+        }
+
+       private:
+        System::Void linkLabel1_LinkClicked(System::Object ^ sender,
+                                            System::Windows::Forms::LinkLabelLinkClickedEventArgs ^ e) {
+            try {
+                /*auto signUpForm = gcnew StudentSignUpForm(parent);
+                signUpForm->MdiParent = this;
+                signUpForm->Show();
+                this->Close();*/
+            } catch (Exception ^ e) {
+                errorMsg(e->Message);
                 MessageBox::Show(e->Message);
             }
         }

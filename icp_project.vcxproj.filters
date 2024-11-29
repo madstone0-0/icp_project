@@ -42,6 +42,12 @@
     <ClCompile Include="StudentProfileForm.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="AddCourseForm.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="EnrollForm.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="MainForm.h">
@@ -101,10 +107,31 @@
     <ClInclude Include="services\PaymentsService.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="services\AuditService.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="services\EnrollService.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="services\UserService.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="AddCourseForm.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="services\StudentActionsService.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="EnrollForm.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="icp_project.rc">
       <Filter>Resource Files</Filter>
     </ResourceCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include=".clang-format" />
   </ItemGroup>
 </Project>
