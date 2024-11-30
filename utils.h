@@ -16,6 +16,8 @@ using STR = String ^ ;
 using Picture = cli::array<Byte>;
 using PictureH = Picture ^ ;
 
+using PreReqList = List<System::Int64>;
+
 namespace icpproject {
     using STR = String ^ ;
 }
@@ -227,11 +229,36 @@ interface class IUser {
 
 public
 interface class IChildHost {
-    property IUser ^ user {
-        IUser ^ get();
-        void set(IUser ^ value);
+    property IUser ^
+        user {
+            IUser ^ get();
+            void set(IUser ^ value);
+        }
+
+        void
+        showChooseForm();
+};
+
+value struct ScheduleItem : public IComparable<ScheduleItem> {
+    long long scid;
+    STR cname;
+    DateTime starttime;
+    DateTime endtime;
+    Day day;
+
+    virtual int CompareTo(ScheduleItem other) { return starttime.CompareTo(other.starttime); }
+
+    ScheduleItem(long long s, STR c, DateTime st, DateTime et, Day d) {
+        scid = s;
+        cname = c;
+        starttime = st;
+        endtime = et;
+        day = d;
     }
 };
+
+// using ScheduleMap = Dictionary<Day, List<ScheduleItem> ^>;
+using ScheduleMap = SortedDictionary<Day, List<ScheduleItem> ^>;
 
 public
 value struct Faculty : public IUser {
@@ -304,6 +331,67 @@ value struct User : public IUser {
         fname = f;
         lname = l;
         email = e;
+    }
+};
+
+value struct NewCourse {
+    STR cname;
+    double credits;
+    Semester sem;
+    int capacity;
+    PreReqList ^ prereqs;
+
+    NewCourse(STR c, double cr, Semester s, int cap, PreReqList ^ p) {
+        cname = c;
+        credits = cr;
+        sem = s;
+        capacity = cap;
+        prereqs = p;
+    }
+
+    NewCourse(STR c, double cr, Semester s, int cap) {
+        cname = c;
+        credits = cr;
+        sem = s;
+        capacity = cap;
+        prereqs = gcnew PreReqList(0);
+    }
+
+    NewCourse(STR c, double cr, Semester s) {
+        cname = c;
+        credits = cr;
+        sem = s;
+        capacity = 40;
+        prereqs = gcnew PreReqList(0);
+    }
+};
+
+value struct Course {
+    int cid;
+    STR cname;
+    double credits;
+    Semester sem;
+    int capacity;
+    PreReqList ^ prereqs;
+
+    operator STR() { return cname; }
+
+    Course(int c, STR cn, double cr, Semester s, int cap, PreReqList ^ p) {
+        cid = c;
+        cname = cn;
+        credits = cr;
+        sem = s;
+        capacity = cap;
+        prereqs = p;
+    }
+
+    Course(int c, STR cn, double cr, Semester s, int cap) {
+        cid = c;
+        cname = cn;
+        credits = cr;
+        sem = s;
+        capacity = cap;
+        prereqs = gcnew PreReqList(0);
     }
 };
 

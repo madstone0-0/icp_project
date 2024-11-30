@@ -6,6 +6,9 @@
 #include "EnrollForm.h"
 #include "EnumerationForm.h"
 #include "StudentProfileForm.h"
+#include "StudentScheduleForm.h"
+#include "TranscriptForm.h"
+#include "ViewScheduleForm.h"
 #include "db/Database.h"
 #include "services/CourseService.h"
 #include "services/EnrollService.h"
@@ -362,6 +365,8 @@ namespace icpproject {
             this->viewScheduleToolStripMenuItem->Name = L"viewScheduleToolStripMenuItem";
             this->viewScheduleToolStripMenuItem->Size = System::Drawing::Size(150, 22);
             this->viewScheduleToolStripMenuItem->Text = L"View Schedule";
+            this->viewScheduleToolStripMenuItem->Click +=
+                gcnew System::EventHandler(this, &MainForm::viewScheduleToolStripMenuItem_Click);
             //
             // addScheduleToolStripMenuItem
             //
@@ -400,6 +405,8 @@ namespace icpproject {
             this->transcriptToolStripMenuItem->Name = L"transcriptToolStripMenuItem";
             this->transcriptToolStripMenuItem->Size = System::Drawing::Size(180, 22);
             this->transcriptToolStripMenuItem->Text = L"Transcript";
+            this->transcriptToolStripMenuItem->Click +=
+                gcnew System::EventHandler(this, &MainForm::transcriptToolStripMenuItem_Click);
             //
             // courseToolStripMenuItem
             //
@@ -432,6 +439,8 @@ namespace icpproject {
             this->viewScheduleToolStripMenuItem1->Name = L"viewScheduleToolStripMenuItem1";
             this->viewScheduleToolStripMenuItem1->Size = System::Drawing::Size(190, 22);
             this->viewScheduleToolStripMenuItem1->Text = L"View Schedule";
+            this->viewScheduleToolStripMenuItem1->Click +=
+                gcnew System::EventHandler(this, &MainForm::viewScheduleToolStripMenuItem1_Click);
             //
             // feesToolStripMenuItem
             //
@@ -526,9 +535,8 @@ namespace icpproject {
             Application::Exit();
         }
 
-       private:
-       private:
-        System::Void logoutToolStripMenuItem_Click(System::Object ^ sender, System::EventArgs ^ e) {
+       public:
+        virtual void showChooseForm() {
             user = nullptr;
             for each (Form ^ form in MdiChildren) {
                 form->Close();
@@ -549,6 +557,9 @@ namespace icpproject {
                 MessageBox::Show(e->Message);
             }
         }
+
+       private:
+        System::Void logoutToolStripMenuItem_Click(System::Object ^ sender, System::EventArgs ^ e) { showChooseForm(); }
 
        private:
         System::Void allCoursesToolStripMenuItem1_Click(System::Object ^ sender, System::EventArgs ^ e) {
@@ -630,9 +641,9 @@ namespace icpproject {
                 auto fname = student->FirstName;
                 auto lname = student->LastName;
                 auto email = student->Email;
-                auto dob = student->dob;
+                auto dob = Convert::ToDateTime(student->dob);
                 auto major = student->major;
-                auto enrollDate = student->enrollDate;
+                auto enrollDate = Convert::ToDateTime(student->enrollDate);
                 auto picture = student->picture;
 
                 StudentProfileForm ^ profileForm =
@@ -710,6 +721,45 @@ namespace icpproject {
                 enrollForm->MdiParent = this;
                 enrollForm->StartPosition = FormStartPosition::CenterScreen;
                 enrollForm->Show();
+            } catch (Exception ^ e) {
+                errorMsg(e->Message);
+                MessageBox::Show(e->Message);
+            }
+        }
+
+       private:
+        System::Void transcriptToolStripMenuItem_Click(System::Object ^ sender, System::EventArgs ^ e) {
+            try {
+                auto transcriptForm = gcnew TranscriptForm(this);
+                transcriptForm->MdiParent = this;
+                transcriptForm->StartPosition = FormStartPosition::CenterScreen;
+                transcriptForm->Show();
+            } catch (Exception ^ e) {
+                errorMsg(e->Message);
+                MessageBox::Show(e->Message);
+            }
+        }
+
+       private:
+        System::Void viewScheduleToolStripMenuItem_Click(System::Object ^ sender, System::EventArgs ^ e) {
+            try {
+                auto viewScheduleForm = gcnew ViewScheduleForm(this);
+                viewScheduleForm->MdiParent = this;
+                viewScheduleForm->StartPosition = FormStartPosition::CenterScreen;
+                viewScheduleForm->Show();
+            } catch (Exception ^ e) {
+                errorMsg(e->Message);
+                MessageBox::Show(e->Message);
+            }
+        }
+
+       private:
+        System::Void viewScheduleToolStripMenuItem1_Click(System::Object ^ sender, System::EventArgs ^ e) {
+            try {
+                auto viewForm = gcnew StudentScheduleForm(this);
+                viewForm->MdiParent = this;
+                viewForm->StartPosition = FormStartPosition::CenterScreen;
+                viewForm->Show();
             } catch (Exception ^ e) {
                 errorMsg(e->Message);
                 MessageBox::Show(e->Message);

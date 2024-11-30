@@ -254,6 +254,9 @@ namespace icpproject {
         System::Void AdminLoginForm_Load(System::Object ^ sender, System::EventArgs ^ e) {}
 
        private:
-        System::Void button1_Click(System::Object ^ sender, System::EventArgs ^ e) { Application::Exit(); }
+        System::Void button1_Click(System::Object ^ sender, System::EventArgs ^ e) {
+            this->Close();
+            parent->showChooseForm();
+        }
     };
 }  // namespace icpproject

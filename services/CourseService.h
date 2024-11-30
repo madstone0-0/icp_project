@@ -9,68 +9,6 @@ namespace icpproject {
     using namespace System;
     using namespace System::Data;
     using namespace System::Collections::Generic;
-    using PreReqList = List<System::Int64>;
-
-    value struct NewCourse {
-        STR cname;
-        double credits;
-        Semester sem;
-        int capacity;
-        PreReqList ^ prereqs;
-
-        NewCourse(STR c, double cr, Semester s, int cap, PreReqList ^ p) {
-            cname = c;
-            credits = cr;
-            sem = s;
-            capacity = cap;
-            prereqs = p;
-        }
-
-        NewCourse(STR c, double cr, Semester s, int cap) {
-            cname = c;
-            credits = cr;
-            sem = s;
-            capacity = cap;
-            prereqs = gcnew PreReqList(0);
-        }
-
-        NewCourse(STR c, double cr, Semester s) {
-            cname = c;
-            credits = cr;
-            sem = s;
-            capacity = 40;
-            prereqs = gcnew PreReqList(0);
-        }
-    };
-
-    value struct Course {
-        int cid;
-        STR cname;
-        double credits;
-        Semester sem;
-        int capacity;
-        PreReqList ^ prereqs;
-
-        operator STR() { return cname; }
-
-        Course(int c, STR cn, double cr, Semester s, int cap, PreReqList ^ p) {
-            cid = c;
-            cname = cn;
-            credits = cr;
-            sem = s;
-            capacity = cap;
-            prereqs = p;
-        }
-
-        Course(int c, STR cn, double cr, Semester s, int cap) {
-            cid = c;
-            cname = cn;
-            credits = cr;
-            sem = s;
-            capacity = cap;
-            prereqs = gcnew PreReqList(0);
-        }
-    };
 
     ref class CourseService : public UserService {
        private:

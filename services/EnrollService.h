@@ -2,6 +2,7 @@
 #include "../db/Database.h"
 #include "../utils.h"
 #include "AuditService.h"
+#include "CourseService.h"
 #include "UserService.h"
 
 namespace icpproject {

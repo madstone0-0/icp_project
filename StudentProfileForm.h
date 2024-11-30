@@ -19,8 +19,8 @@ namespace icpproject {
         STR stuFName;
         STR stuLName;
         Major stuMajor;
-        STR stuDOB;
-        STR stuEnrollDate;
+        DateTime stuDOB;
+        DateTime stuEnrollDate;
 
        private:
         System::Windows::Forms::Label ^ label1;
@@ -77,14 +77,14 @@ namespace icpproject {
             void set(Major value) { stuMajor = value; }
         }
 
-        property STR DOB {
-            STR get() { return stuDOB; }
-            void set(STR value) { stuDOB = value; }
+        property DateTime DOB {
+            DateTime get() { return stuDOB; }
+            void set(DateTime value) { stuDOB = value; }
         }
 
-        property STR EnrollDate {
-            STR get() { return stuEnrollDate; }
-            void set(STR value) { stuEnrollDate = value; }
+        property DateTime EnrollDate {
+            DateTime get() { return stuEnrollDate; }
+            void set(DateTime value) { stuEnrollDate = value; }
         }
 
         property PictureH PictureBytes {
@@ -92,7 +92,7 @@ namespace icpproject {
             void set(PictureH value) { stuPicture = value; }
         }
 
-        StudentProfileForm(STR fn, STR ln, Major m, STR d, STR e, PictureH p) {
+        StudentProfileForm(STR fn, STR ln, Major m, DateTime d, DateTime e, PictureH p) {
             stuFName = fn;
             stuLName = ln;
             stuMajor = m;
@@ -336,8 +336,8 @@ namespace icpproject {
                 pictureBox1->SizeMode = PictureBoxSizeMode::StretchImage;
                 stuNameLabel->Text = stuFName + " " + stuLName;
                 stuMajorLabel->Text = parseMajorName(stuMajor);
-                stuDOBLabel->Text = stuDOB;
-                stuEnrollLabel->Text = stuEnrollDate;
+                stuDOBLabel->Text = stuDOB.ToString("D");
+                stuEnrollLabel->Text = stuEnrollDate.ToString("D");
                 pictureBox1->Image = Image::FromStream(gcnew IO::MemoryStream(stuPicture));
             } catch (Exception ^ e) {
                 errorMsg(e->Message);

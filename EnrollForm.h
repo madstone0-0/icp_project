@@ -245,6 +245,7 @@ namespace icpproject {
             this->button1->TabIndex = 1;
             this->button1->Text = L"Enroll";
             this->button1->UseVisualStyleBackColor = true;
+            this->button1->Click += gcnew System::EventHandler(this, &EnrollForm::button1_Click);
             //
             // groupBox1
             //
@@ -283,10 +284,12 @@ namespace icpproject {
         }
 #pragma endregion
        private:
+        Course ^ selectedCourse {};
         void updateSelection() {
             try {
                 auto kvp = (KeyValuePair<long long, STR> ^) courseBox->SelectedItem;
                 auto res = courseService->GetById(kvp->Key);
+                selectedCourse = res.data;
                 auto course = res.data;
                 auto preqRes = courseService->GetPrereqCourses(course->cid);
                 auto prereqs = preqRes.data;
@@ -340,6 +343,22 @@ namespace icpproject {
        private:
         System::Void courseBox_SelectedIndexChanged(System::Object ^ sender, System::EventArgs ^ e) {
             updateSelection();
+        }
+
+       private:
+        System::Void button1_Click(System::Object ^ sender, System::EventArgs ^ e) {
+            try {
+                auto kvp = (KeyValuePair<long long, STR> ^) courseBox->SelectedItem;
+                auto enrollRes =
+                    enrollService->Enroll(NewEnrollment(parent->user->UID, kvp->Key, selectedCourse->sem, Grade::NG));
+
+                if (enrollRes.status) {
+                    MessageBox::Show(enrollRes.data);
+                }
+            } catch (Exception ^ e) {
+                errorMsg(e->Message);
+                MessageBox::Show(e->Message);
+            }
         }
     };
 }  // namespace icpproject

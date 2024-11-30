@@ -139,6 +139,9 @@
     <ClCompile Include="MainForm.cpp" />
     <ClCompile Include="StudentLoginForm.cpp" />
     <ClCompile Include="StudentProfileForm.cpp" />
+    <ClCompile Include="StudentScheduleForm.cpp" />
+    <ClCompile Include="TranscriptForm.cpp" />
+    <ClCompile Include="ViewScheduleForm.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AddCourseForm.h">
@@ -186,8 +189,17 @@
     <ClInclude Include="StudentProfileForm.h">
       <FileType>CppForm</FileType>
     </ClInclude>
+    <ClInclude Include="StudentScheduleForm.h">
+      <FileType>CppForm</FileType>
+    </ClInclude>
     <ClInclude Include="Tests.h" />
+    <ClInclude Include="TranscriptForm.h">
+      <FileType>CppForm</FileType>
+    </ClInclude>
     <ClInclude Include="utils.h" />
+    <ClInclude Include="ViewScheduleForm.h">
+      <FileType>CppForm</FileType>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="AddCourseForm.resx">
@@ -223,6 +235,11 @@
     <EmbeddedResource Include="StudentProfileForm.resx">
       <DependentUpon>StudentProfileForm.h</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="StudentScheduleForm.resx" />
+    <EmbeddedResource Include="TranscriptForm.resx">
+      <DependentUpon>TranscriptForm.h</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ViewScheduleForm.resx" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="icp_project.rc" />

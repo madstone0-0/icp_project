@@ -8,12 +8,6 @@
 namespace icpproject {
     using namespace System::Windows::Forms;
 
-    value struct ScheduleItem {
-        long long sid;
-        DateTime starttime;
-        DateTime endtime;
-    };
-
     value struct NewSchedule {
         long long cid;
         DateTime starttime;
@@ -119,6 +113,46 @@ WHERE
             }
         }
 
+        ServiceReturn<STR> GetAll(ScheduleMap ^ schedule) {
+            MySqlDataReader ^ reader = nullptr;
+            try {
+                STR query = R"(
+SELECT
+    scid,
+    s.cid,
+    cname,
+    starttime,
+    endtime,
+    DAY
+FROM
+    schedule s
+INNER JOIN course c ON
+    c.cid = s.cid
+)";
+                reader = db::Ins()->execute(query);
+                while (reader->Read()) {
+                    auto scid = Convert::ToInt64(reader->GetBodyDefinition("scid"));
+                    auto cname = reader->GetBodyDefinition("cname");
+                    auto starttime = Convert::ToDateTime(reader->GetBodyDefinition("starttime"));
+                    auto endtime = Convert::ToDateTime(reader->GetBodyDefinition("endtime"));
+                    auto day = parseStrDay(reader->GetBodyDefinition("day"));
+                    if (!schedule->ContainsKey(day)) {
+                        schedule->Add(day, gcnew List<ScheduleItem>(0));
+                    }
+                    List<ScheduleItem> ^ items = gcnew List<ScheduleItem>(0);
+                    schedule->TryGetValue(day, items);
+                    items->Add(ScheduleItem{scid, cname, starttime, endtime, day});
+                }
+
+                Audit::Ins()->Log("Viewed general schedule", user->UID);
+                return {true, "Retrieved schedule"};
+            } finally {
+                if (reader != nullptr) {
+                    reader->Close();
+                }
+            }
+        }
+
         ServiceReturn<STR> Add(NewSchedule sched) {
             MySqlDataReader ^ reader = nullptr;
             try {
@@ -191,7 +225,7 @@ WHERE
             }
         }
 
-        ServiceReturn<Dictionary<Day, List<ScheduleItem> ^> ^> GenerateStudentSchedule(long long uid) {
+        ServiceReturn<ScheduleMap ^> GenerateStudentSchedule(long long uid) {
             MySqlDataReader ^ reader = nullptr;
             try {
                 EnrollService ^ enrollService = gcnew EnrollService(user);
@@ -205,10 +239,28 @@ WHERE
                     enrolledCourses->Add(enrollment.cid);
                 }
                 STR inClause = String::Join(",", enrolledCourses);
-                reader = db::Ins()->execute(String::Format("select * from schedule where cid in ({0})", inClause));
-                Dictionary<Day, List<ScheduleItem> ^> ^ schedule = gcnew Dictionary<Day, List<ScheduleItem> ^>(0);
+                STR query = R"(
+SELECT
+    scid,
+    s.cid,
+    cname,
+    starttime,
+    endtime,
+    DAY
+FROM
+    schedule s
+INNER JOIN course c ON
+    c.cid = s.cid
+WHERE
+    s.cid IN (
+       {0}
+    )
+)";
+                reader = db::Ins()->execute(String::Format(query, inClause));
+                ScheduleMap ^ schedule = gcnew ScheduleMap();
                 while (reader->Read()) {
-                    auto sid = Convert::ToInt64(reader->GetBodyDefinition("sid"));
+                    auto scid = Convert::ToInt64(reader->GetBodyDefinition("scid"));
+                    auto cname = reader->GetBodyDefinition("cname");
                     auto starttime = Convert::ToDateTime(reader->GetBodyDefinition("starttime"));
                     auto endtime = Convert::ToDateTime(reader->GetBodyDefinition("endtime"));
                     auto day = parseStrDay(reader->GetBodyDefinition("day"));
@@ -217,7 +269,7 @@ WHERE
                     }
                     List<ScheduleItem> ^ items = gcnew List<ScheduleItem>(0);
                     schedule->TryGetValue(day, items);
-                    items->Add(ScheduleItem{sid, starttime, endtime});
+                    items->Add(ScheduleItem{scid, cname, starttime, endtime, day});
                 }
 
                 return {true, schedule};
