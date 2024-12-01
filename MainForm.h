@@ -746,7 +746,8 @@ namespace icpproject {
                 EnrollService ^ service = gcnew EnrollService(user);
                 auto res = service->GetAll();
                 if (res.status) {
-                    EnumerationForm ^ enumForm = gcnew EnumerationForm("Enrollments", res.data);
+                    EnumerationForm ^ enumForm = gcnew EnumerationForm("Enrollments", res.data, true,
+                                                                       "delete from enrollment where eid = @id", "eid");
                     enumForm->MdiParent = this;
                     enumForm->StartPosition = FormStartPosition::CenterScreen;
                     enumForm->Show();

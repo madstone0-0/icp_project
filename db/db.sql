@@ -88,7 +88,7 @@ create table prerequisites (
     preqid int NOT null,
     primary key (cid, preqid),
     foreign key (cid) references course(cid) ON DELETE CASCADE,
-    foreign key (preqid) references course(cid)
+    foreign key (preqid) references course(cid) ON DELETE cascade
 );
 
 
@@ -97,7 +97,7 @@ create table course_faculty (
   cid int not null,
   primary key (uid, cid),
   foreign key (uid) references faculty (uid) ON DELETE CASCADE,
-  foreign key (cid) references course (cid)
+  foreign key (cid) references course (cid) ON DELETE cascade
 );
 
 create table enrollment (

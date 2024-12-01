@@ -64,7 +64,11 @@ namespace icpproject {
             conn->Close();
         }
 
-        MySqlCommand ^
+        MySqlDataAdapter ^
+            getDta() { return dta; }
+
+            MySqlCommand
+            ^
             getCmd() { return cmd; }
 
             MySqlDataReader

@@ -60,9 +60,9 @@ namespace icpproject {
         long long addedCourseId = 0;
 
         auto addPrerequisiteCourses = [&](CourseService ^ courseService, PreReqList ^ prereqCourses) {
-            cli::array<NewCourse> ^ courses = {NewCourse("Intro to Programming", 3.0, Semester::S1, 40),
-                                               NewCourse("Data Structures", 3.0, Semester::S2, 35),
-                                               NewCourse("Algorithms", 3.0, Semester::S1, 30)};
+            cli::array<NewCourse> ^ courses = {NewCourse("Intro to Programming", 1, Semester::S1, 40),
+                                               NewCourse("Data Structures", 1, Semester::S2, 35),
+                                               NewCourse("Algorithms", 1, Semester::S1, 30)};
 
             for (int i = 0; i < courses->Length; i++) {
                 auto addResult = courseService->Add(courses[i]);

@@ -335,8 +335,8 @@ namespace icpproject {
                 sem1Trans->Text = "";
                 sem2Trans->Text = "";
 
-                auto sem1List = gcnew List<TranscriptItem>(0);
-                auto sem2List = gcnew List<TranscriptItem>(0);
+                auto sem1List = gcnew List<TranscriptItem>(1);
+                auto sem2List = gcnew List<TranscriptItem>(1);
                 semMap->TryGetValue(parseSemester(Semester::S1), sem1List);
                 semMap->TryGetValue(parseSemester(Semester::S2), sem2List);
                 for each (auto item in sem1List) {

@@ -103,6 +103,7 @@ namespace icpproject {
         void InitializeComponent(void) {
             this->splitContainer1 = (gcnew System::Windows::Forms::SplitContainer());
             this->courseBox = (gcnew System::Windows::Forms::ListBox());
+            this->deleteButton = (gcnew System::Windows::Forms::Button());
             this->updateButton = (gcnew System::Windows::Forms::Button());
             this->semBox = (gcnew System::Windows::Forms::ComboBox());
             this->creditsBox = (gcnew System::Windows::Forms::ComboBox());
@@ -114,7 +115,6 @@ namespace icpproject {
             this->label3 = (gcnew System::Windows::Forms::Label());
             this->label2 = (gcnew System::Windows::Forms::Label());
             this->label1 = (gcnew System::Windows::Forms::Label());
-            this->deleteButton = (gcnew System::Windows::Forms::Button());
             (cli::safe_cast<System::ComponentModel::ISupportInitialize ^>(this->splitContainer1))->BeginInit();
             this->splitContainer1->Panel1->SuspendLayout();
             this->splitContainer1->Panel2->SuspendLayout();
@@ -159,6 +159,16 @@ namespace icpproject {
             this->courseBox->TabIndex = 0;
             this->courseBox->SelectedIndexChanged +=
                 gcnew System::EventHandler(this, &UpdateCourseForm::courseBox_SelectedIndexChanged);
+            //
+            // deleteButton
+            //
+            this->deleteButton->Location = System::Drawing::Point(312, 360);
+            this->deleteButton->Name = L"deleteButton";
+            this->deleteButton->Size = System::Drawing::Size(75, 23);
+            this->deleteButton->TabIndex = 11;
+            this->deleteButton->Text = L"Delete";
+            this->deleteButton->UseVisualStyleBackColor = true;
+            this->deleteButton->Click += gcnew System::EventHandler(this, &UpdateCourseForm::deleteButton_Click);
             //
             // updateButton
             //
@@ -265,15 +275,6 @@ namespace icpproject {
             this->label1->Size = System::Drawing::Size(71, 24);
             this->label1->TabIndex = 0;
             this->label1->Text = L"Name:";
-            //
-            // deleteButton
-            //
-            this->deleteButton->Location = System::Drawing::Point(312, 360);
-            this->deleteButton->Name = L"deleteButton";
-            this->deleteButton->Size = System::Drawing::Size(75, 23);
-            this->deleteButton->TabIndex = 11;
-            this->deleteButton->Text = L"Delete";
-            this->deleteButton->UseVisualStyleBackColor = true;
             //
             // UpdateCourseForm
             //
@@ -420,6 +421,28 @@ namespace icpproject {
                 }
 
                 MessageBox::Show(updateRes.data);
+                updateCourses();
+                updateSelection();
+            } catch (Exception ^ e) {
+                errorMsg(e->Message);
+                MessageBox::Show(e->Message);
+            }
+        }
+
+       private:
+        System::Void deleteButton_Click(System::Object ^ sender, System::EventArgs ^ e) {
+            try {
+                auto kvp = (KeyValuePair<long long, STR> ^) courseBox->SelectedItem;
+                if (kvp == nullptr) {
+                    return;
+                }
+
+                auto res = courseService->Delete(kvp->Key);
+                if (!res.status) {
+                    MessageBox::Show("Failed to delete course");
+                    return;
+                }
+                MessageBox::Show(res.data);
                 updateCourses();
                 updateSelection();
             } catch (Exception ^ e) {
