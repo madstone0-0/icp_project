@@ -97,6 +97,7 @@ namespace icpproject {
             this->button1->TabIndex = 15;
             this->button1->Text = L"Cancel";
             this->button1->UseVisualStyleBackColor = true;
+            this->button1->Click += gcnew System::EventHandler(this, &FacultyLoginForm::button1_Click);
             //
             // linkLabel1
             //
@@ -224,6 +225,12 @@ namespace icpproject {
             } catch (Exception ^ e) {
                 MessageBox::Show(e->Message);
             }
+        }
+
+       private:
+        System::Void button1_Click(System::Object ^ sender, System::EventArgs ^ e) {
+            this->Close();
+            parent->showChooseForm();
         }
     };
 }  // namespace icpproject

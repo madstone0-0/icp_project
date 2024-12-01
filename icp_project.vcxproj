@@ -221,6 +221,9 @@
     <EmbeddedResource Include="AddCourseForm.resx">
       <DependentUpon>AddCourseForm.h</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="AddScheduleForm.resx">
+      <DependentUpon>AddScheduleForm.h</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="AdminLoginForm.resx">
       <DependentUpon>AdminLoginForm.h</DependentUpon>
     </EmbeddedResource>

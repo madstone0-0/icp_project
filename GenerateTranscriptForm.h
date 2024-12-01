@@ -341,14 +341,12 @@ namespace icpproject {
                 semMap->TryGetValue(parseSemester(Semester::S2), sem2List);
                 for each (auto item in sem1List) {
                     sem1Trans->Text +=
-                        String::Format("{0} - {1} - {2} - {3}\n", item.cname, parseGrade(item.grade, true),
-                                       item.credits, parseSemester(item.sem));
+                        String::Format("{0} - {1} - {2}\n", item.cname, parseGrade(item.grade, true), item.credits);
                 }
 
                 for each (auto item in sem2List) {
                     sem2Trans->Text +=
-                        String::Format("{0} - {1} - {2} - {3}\n", item.cname, parseGrade(item.grade, true),
-                                       item.credits, parseSemester(item.sem));
+                        String::Format("{0} - {1} - {2}\n", item.cname, parseGrade(item.grade, true), item.credits);
                 }
 
             } catch (Exception ^ e) {
@@ -365,7 +363,9 @@ namespace icpproject {
 
                 auto res = gcnew List<Student>(0);
                 for each (auto student in students) {
-                    if (student.FirstName->Contains(searchText) || student.LastName->Contains(searchText)) {
+                    auto lowerText = searchText->ToLower()->Replace(" ", "");
+                    auto name = student.FirstName->ToLower() + student.LastName->ToLower();
+                    if (name->Contains(lowerText)) {
                         res->Add(student);
                     }
                 }

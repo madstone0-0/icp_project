@@ -159,6 +159,15 @@ INNER JOIN course c ON
                 if (doesTimeConflict(sched.starttime, sched.endtime, sched.day)) {
                     throw gcnew Exception("Time conflict detected");
                 }
+
+                if (sched.starttime.CompareTo(sched.endtime) >= 0) {
+                    throw gcnew Exception("Start time must be before end time");
+                }
+
+                if (sched.endtime - sched.starttime < TimeSpan(0, 0, 30, 0)) {
+                    throw gcnew Exception("Time slot must be at least 30 minutes");
+                }
+
                 ParamsH params = gcnew Params(0);
                 params->Add("@cid", sched.cid);
                 params->Add("@st", formatDateTimeAsMySQLTime(sched.starttime));
