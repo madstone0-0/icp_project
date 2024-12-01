@@ -14,6 +14,57 @@ namespace icpproject {
        public:
         EnumerationService(IUser ^ user) : UserService{user} {}
 
+        ServiceReturn<STR> GetAllStudents(List<Student> ^ students) {
+            MySqlDataReader ^ reader = nullptr;
+            try {
+                STR query = R"(
+SELECT
+    student.uid AS UID,
+    fname AS First_Name,
+    lname AS Last_Name,
+    email AS Email,
+    dob AS 
+Date_Of_Birth,
+    picture AS Picture,
+    major AS Major,
+    enrolldate AS Enroll_Date
+FROM
+    student
+INNER 
+JOIN USER 
+ON
+    user.uid = student.uid
+)";
+                reader = db::Ins()->execute(query);
+                while (reader->Read()) {
+                    auto uid = Convert::ToInt64(reader->GetUInt64("UID"));
+                    auto fname = reader->GetBodyDefinition("First_Name");
+                    auto lname = reader->GetBodyDefinition("Last_Name");
+                    auto email = reader->GetBodyDefinition("Email");
+                    auto dob = reader->GetBodyDefinition("Date_Of_Birth");
+                    PictureH picture;
+                    try {
+                        auto pictureLen = reader->GetBytes(reader->GetOrdinal("picture"), 0, nullptr, 0, 0);
+                        picture = gcnew Picture(pictureLen);
+                        reader->GetBytes(reader->GetOrdinal("picture"), 0, picture, 0, pictureLen);
+                    } catch (Exception ^ e) {
+                        errorMsg(e->Message);
+                        MessageBox::Show(e->Message);
+                        picture = gcnew Picture(0);
+                    }
+                    auto major = parseStrMajor(reader->GetBodyDefinition("Major"));
+                    auto enrollDate = reader->GetBodyDefinition("Enroll_Date");
+                    students->Add(Student(uid, fname, lname, email, dob, picture, major, enrollDate));
+                }
+
+                return {true, "Retrieved all students"};
+            } finally {
+                if (reader != nullptr) {
+                    reader->Close();
+                }
+            }
+        }
+
         ServiceReturn<DataTable ^> GetAllStudents() {
             MySqlDataReader ^ reader = nullptr;
             try {
@@ -38,7 +89,44 @@ ON
                 reader = db::Ins()->execute(query);
                 DataTable ^ dt = gcnew DataTable();
                 dt->Load(reader);
+
                 return {true, dt};
+            } finally {
+                if (reader != nullptr) {
+                    reader->Close();
+                }
+            }
+        }
+
+        ServiceReturn<STR> GetAllFaculty(List<Faculty> ^ faculty) {
+            MySqlDataReader ^ reader = nullptr;
+            try {
+                STR query = R"(
+SELECT
+    faculty.uid AS UID,
+    fname AS First_Name,
+    lname AS Last_Name,
+    email AS Email,
+    appDate AS 
+Appointment_Date,
+    dept AS Department
+FROM
+    faculty
+INNER JOIN USER ON
+    user.uid = faculty.uid
+)";
+                reader = db::Ins()->execute(query);
+                while (reader->Read()) {
+                    auto uid = Convert::ToInt64(reader->GetUInt64("UID"));
+                    auto fname = reader->GetBodyDefinition("First_Name");
+                    auto lname = reader->GetBodyDefinition("Last_Name");
+                    auto email = reader->GetBodyDefinition("Email");
+                    auto appDate = reader->GetBodyDefinition("Appointment_Date");
+                    auto dept = parseStrDept(reader->GetBodyDefinition("Department"));
+                    faculty->Add(Faculty(uid, fname, lname, email, appDate, dept));
+                }
+
+                return {true, "Retrieved all faculty"};
             } finally {
                 if (reader != nullptr) {
                     reader->Close();
@@ -66,6 +154,7 @@ INNER JOIN USER ON
                 reader = db::Ins()->execute(query);
                 DataTable ^ dt = gcnew DataTable();
                 dt->Load(reader);
+
                 return {true, dt};
             } finally {
                 if (reader != nullptr) {

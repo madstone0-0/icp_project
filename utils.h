@@ -102,7 +102,7 @@ inline Major parseStrMajor(STR major) {
     if (major == "EN") return Major::EN;
 }
 
-inline STR parseSemester(const Semester& sem) {
+inline STR parseSemester(Semester sem) {
     switch (sem) {
         case Semester::S1:
             return "S1";
@@ -177,6 +177,50 @@ inline Grade parseStrGrade(STR grade) {
     if (grade == "F+") return Grade::F_plus;
     if (grade == "F") return Grade::F;
     if (grade == "NG" || grade == "Not Graded") return Grade::NG;
+}
+
+inline double gradeToCredits(Grade grade) {
+    switch (grade) {
+        case Grade::A_plus:
+            return 4.0;
+            break;
+        case Grade::A:
+            return 4.0;
+            break;
+        case Grade::B:
+            return 3.0;
+            break;
+        case Grade::B_plus:
+            return 3.5;
+            break;
+        case Grade::C:
+            return 2.0;
+            break;
+        case Grade::C_plus:
+            return 2.5;
+            break;
+        case Grade::D:
+            return 1.0;
+            break;
+        case Grade::D_plus:
+            return 1.5;
+            break;
+        case Grade::E:
+            return 0.0;
+            break;
+        case Grade::E_plus:
+            return 0.0;
+            break;
+        case Grade::F_plus:
+            return 0.0;
+            break;
+        case Grade::F:
+            return 0.0;
+            break;
+        case Grade::NG:
+            return 0.0;
+            break;
+    }
 }
 
 inline STR parseDay(Day day) {
@@ -260,6 +304,17 @@ value struct ScheduleItem : public IComparable<ScheduleItem> {
 // using ScheduleMap = Dictionary<Day, List<ScheduleItem> ^>;
 using ScheduleMap = SortedDictionary<Day, List<ScheduleItem> ^>;
 
+template <typename Data, typename Extra>
+value struct DataWithExtra {
+    Data data;
+    Extra extra;
+
+    DataWithExtra(Data d, Extra e) {
+        data = d;
+        extra = e;
+    }
+};
+
 public
 value struct Faculty : public IUser {
     long long uid;
@@ -332,6 +387,49 @@ value struct User : public IUser {
         lname = l;
         email = e;
     }
+};
+
+public
+value struct Student : public IUser {
+    int uid;
+    STR fname;
+    STR lname;
+    STR email;
+    STR dob;
+    PictureH picture;
+    Major major;
+    STR enrollDate;
+
+    virtual property int UID {
+        int get() { return uid; }
+        void set(int value) { uid = value; }
+    }
+
+    virtual property STR FirstName {
+        STR get() { return fname; }
+        void set(STR value) { fname = value; }
+    }
+
+    virtual property STR LastName {
+        STR get() { return lname; }
+        void set(STR value) { lname = value; }
+    }
+
+    virtual property STR Email {
+        STR get() { return email; }
+        void set(STR value) { email = value; }
+    }
+
+    Student(int u, STR f, STR l, STR e, STR d, PictureH p, Major m, STR en) {
+        uid = u;
+        fname = f;
+        lname = l;
+        email = e;
+        dob = d;
+        picture = p;
+        major = m;
+        enrollDate = en;
+    };
 };
 
 value struct NewCourse {

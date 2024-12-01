@@ -228,7 +228,7 @@ INNER JOIN `user` u ON
             }
         }
 
-        ServiceReturn<STR> Add(NewCourse newCourse) {
+        ServiceReturn<DataWithExtra<STR, long long> ^> Add(NewCourse newCourse) {
             ParamsH params = gcnew Params(1);
             MySqlDataReader ^ reader = nullptr;
             try {
@@ -261,7 +261,7 @@ INNER JOIN `user` u ON
 
                 db::Ins()->commit();
                 Audit::Ins()->Log("Added new course", user->UID, "Course: " + newCourse.cname);
-                return {true, "Course added successfully"};
+                return {true, gcnew DataWithExtra<STR, long long>("Course added successfully", cid)};
 
             } finally {
                 if (reader != nullptr) {

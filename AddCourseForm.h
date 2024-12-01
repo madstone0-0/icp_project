@@ -1,5 +1,6 @@
 #pragma once
 #include "services/CourseService.h"
+#include "services/EnumerationService.h"
 #include "utils.h"
 
 namespace icpproject {
@@ -21,10 +22,20 @@ namespace icpproject {
         IChildHost ^ parent;
 
        private:
-        System::Windows::Forms::Label ^ label5;
+        System::Windows::Forms::GroupBox ^ groupBox1;
 
        private:
-        System::Windows::Forms::ComboBox ^ facBox;
+        System::ComponentModel::BackgroundWorker ^ backgroundWorker1;
+
+       private:
+        System::Windows::Forms::GroupBox ^ groupBox2;
+
+       private:
+        System::Windows::Forms::ListBox ^ lecBox;
+
+       private:
+       private:
+       private:
         CourseService ^ service;
 
        public:
@@ -103,9 +114,13 @@ namespace icpproject {
             this->capacityInput = (gcnew System::Windows::Forms::NumericUpDown());
             this->prereqBox = (gcnew System::Windows::Forms::ListBox());
             this->addButton = (gcnew System::Windows::Forms::Button());
-            this->label5 = (gcnew System::Windows::Forms::Label());
-            this->facBox = (gcnew System::Windows::Forms::ComboBox());
+            this->groupBox1 = (gcnew System::Windows::Forms::GroupBox());
+            this->backgroundWorker1 = (gcnew System::ComponentModel::BackgroundWorker());
+            this->groupBox2 = (gcnew System::Windows::Forms::GroupBox());
+            this->lecBox = (gcnew System::Windows::Forms::ListBox());
             (cli::safe_cast<System::ComponentModel::ISupportInitialize ^>(this->capacityInput))->BeginInit();
+            this->groupBox1->SuspendLayout();
+            this->groupBox2->SuspendLayout();
             this->SuspendLayout();
             //
             // label1
@@ -190,9 +205,9 @@ namespace icpproject {
             // prereqBox
             //
             this->prereqBox->FormattingEnabled = true;
-            this->prereqBox->Location = System::Drawing::Point(24, 192);
+            this->prereqBox->Location = System::Drawing::Point(8, 24);
             this->prereqBox->Name = L"prereqBox";
-            this->prereqBox->Size = System::Drawing::Size(576, 95);
+            this->prereqBox->Size = System::Drawing::Size(280, 108);
             this->prereqBox->TabIndex = 11;
             //
             // addButton
@@ -205,35 +220,43 @@ namespace icpproject {
             this->addButton->UseVisualStyleBackColor = true;
             this->addButton->Click += gcnew System::EventHandler(this, &AddCourseForm::addButton_Click);
             //
-            // label5
+            // groupBox1
             //
-            this->label5->AutoSize = true;
-            this->label5->Font =
-                (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 14.25F, System::Drawing::FontStyle::Bold,
-                                             System::Drawing::GraphicsUnit::Point, static_cast<System::Byte>(0)));
-            this->label5->Location = System::Drawing::Point(16, 144);
-            this->label5->Name = L"label5";
-            this->label5->Size = System::Drawing::Size(83, 24);
-            this->label5->TabIndex = 13;
-            this->label5->Text = L"Faculty:";
+            this->groupBox1->Controls->Add(this->prereqBox);
+            this->groupBox1->Location = System::Drawing::Point(16, 144);
+            this->groupBox1->Name = L"groupBox1";
+            this->groupBox1->Size = System::Drawing::Size(296, 144);
+            this->groupBox1->TabIndex = 13;
+            this->groupBox1->TabStop = false;
+            this->groupBox1->Text = L"Prerequisites";
+            this->groupBox1->Enter += gcnew System::EventHandler(this, &AddCourseForm::groupBox1_Enter);
             //
-            // facBox
+            // groupBox2
             //
-            this->facBox->FormattingEnabled = true;
-            this->facBox->Location = System::Drawing::Point(120, 144);
-            this->facBox->Name = L"facBox";
-            this->facBox->Size = System::Drawing::Size(121, 21);
-            this->facBox->TabIndex = 14;
+            this->groupBox2->Controls->Add(this->lecBox);
+            this->groupBox2->Location = System::Drawing::Point(328, 144);
+            this->groupBox2->Name = L"groupBox2";
+            this->groupBox2->Size = System::Drawing::Size(312, 136);
+            this->groupBox2->TabIndex = 14;
+            this->groupBox2->TabStop = false;
+            this->groupBox2->Text = L"Lecturer";
+            //
+            // lecBox
+            //
+            this->lecBox->FormattingEnabled = true;
+            this->lecBox->Location = System::Drawing::Point(8, 24);
+            this->lecBox->Name = L"lecBox";
+            this->lecBox->Size = System::Drawing::Size(304, 108);
+            this->lecBox->TabIndex = 0;
             //
             // AddCourseForm
             //
             this->AutoScaleDimensions = System::Drawing::SizeF(6, 13);
             this->AutoScaleMode = System::Windows::Forms::AutoScaleMode::Font;
             this->ClientSize = System::Drawing::Size(653, 324);
-            this->Controls->Add(this->facBox);
-            this->Controls->Add(this->label5);
+            this->Controls->Add(this->groupBox2);
+            this->Controls->Add(this->groupBox1);
             this->Controls->Add(this->addButton);
-            this->Controls->Add(this->prereqBox);
             this->Controls->Add(this->capacityInput);
             this->Controls->Add(this->creditsCombo);
             this->Controls->Add(this->semCombo);
@@ -246,6 +269,8 @@ namespace icpproject {
             this->Text = L"AddCourseForm";
             this->Load += gcnew System::EventHandler(this, &AddCourseForm::AddCourseForm_Load);
             (cli::safe_cast<System::ComponentModel::ISupportInitialize ^>(this->capacityInput))->EndInit();
+            this->groupBox1->ResumeLayout(false);
+            this->groupBox2->ResumeLayout(false);
             this->ResumeLayout(false);
             this->PerformLayout();
         }
@@ -259,19 +284,25 @@ namespace icpproject {
                 auto sem = parseStrSemester(Convert::ToString(semCombo->SelectedItem));
                 auto capacity = Convert::ToInt32(capacityInput->Value);
                 PreReqList ^ prereqs = gcnew PreReqList(0);
+                auto lecturer = (KeyValuePair<long long, STR> ^) lecBox->SelectedItem;
 
                 if (isEmpty(cname)) {
                     throw gcnew Exception("Course name cannot be empty");
                 }
 
                 if (capacity <= 0) {
-                    throw gcnew Exception("Credits must be greater than 0");
+                    throw gcnew Exception("Capacity must be greater than 0");
+                }
+
+                if (lecturer == nullptr) {
+                    throw gcnew Exception("Please select a lecturer");
                 }
 
                 infoMsg("Course name: " + cname);
                 infoMsg("Credits: " + credits);
                 infoMsg("Semester: " + parseSemester(sem));
                 infoMsg("Capacity: " + capacity);
+                infoMsg("Lecturer: " + lecBox->SelectedItem);
 
                 for each (auto p in prereqBox->SelectedItems) {
                     auto kvp = (KeyValuePair<long long, STR> ^) p;
@@ -281,7 +312,7 @@ namespace icpproject {
 
                 auto res = service->Add(NewCourse(cname, credits, sem, capacity, prereqs));
                 if (res.status) {
-                    MessageBox::Show(res.data);
+                    MessageBox::Show(res.data->data);
                 } else {
                     auto lastId = db::Ins()->getCmd()->LastInsertedId;
                     service->Delete(lastId);
@@ -289,11 +320,22 @@ namespace icpproject {
                     return;
                 }
 
+                auto cid = res.data->extra;
+                auto assignRes = service->AssignFaculty(lecturer->Key, cid);
+                if (!assignRes.status) {
+                    service->Delete(cid);
+                    MessageBox::Show("Failed to assign lecturer");
+                    return;
+                }
+                MessageBox::Show(assignRes.data);
+
                 cnameInput->Text = "";
                 creditsCombo->SelectedIndex = 0;
                 semCombo->SelectedIndex = 0;
                 capacityInput->Value = 0;
                 prereqBox->ClearSelected();
+                lecBox->ClearSelected();
+                updateCourses();
 
             } catch (Exception ^ e) {
                 errorMsg(e->Message);
@@ -302,6 +344,18 @@ namespace icpproject {
         }
 
        private:
+        void updateCourses() {
+            prereqBox->Items->Clear();
+            List<Course> ^ courses = gcnew List<Course>(0);
+            auto res = service->GetAll(courses);
+            prereqBox->BeginUpdate();
+            for each (auto c in courses) {
+                KeyValuePair<long long, STR> ^ kvp = gcnew KeyValuePair<long long, STR>(c.cid, c.cname);
+                prereqBox->Items->Add(kvp);
+            }
+            prereqBox->EndUpdate();
+        }
+
         System::Void AddCourseForm_Load(System::Object ^ sender, System::EventArgs ^ e) {
             try {
                 List<double> ^ credits = gcnew List<double>(0);
@@ -312,15 +366,22 @@ namespace icpproject {
                 sems->Add("S2");
                 creditsCombo->DataSource = credits;
                 semCombo->DataSource = sems;
-                List<Course> ^ courses = gcnew List<Course>(0);
-                auto res = service->GetAll(courses);
-                prereqBox->SelectionMode = SelectionMode::MultiSimple;
-                prereqBox->BeginUpdate();
-                for each (auto c in courses) {
-                    KeyValuePair<long long, STR> ^ kvp = gcnew KeyValuePair<long long, STR>(c.cid, c.cname);
-                    prereqBox->Items->Add(kvp);
+
+                List<Faculty> ^ faculty = gcnew List<Faculty>(0);
+                auto enumService = gcnew EnumerationService(parent->user);
+                auto resFac = enumService->GetAllFaculty(faculty);
+                lecBox->SelectionMode = SelectionMode::One;
+                lecBox->BeginUpdate();
+                for each (auto f in faculty) {
+                    KeyValuePair<long long, STR> ^ kvp =
+                        gcnew KeyValuePair<long long, STR>(f.uid, f.fname + " " + f.lname);
+                    lecBox->Items->Add(kvp);
                 }
-                prereqBox->EndUpdate();
+                lecBox->EndUpdate();
+
+                prereqBox->SelectionMode = SelectionMode::MultiSimple;
+                updateCourses();
+
             } catch (Exception ^ e) {
                 errorMsg(e->Message);
                 MessageBox::Show(e->Message);
@@ -329,5 +390,9 @@ namespace icpproject {
 
        private:
         System::Void cnameInput_TextChanged(System::Object ^ sender, System::EventArgs ^ e) {}
+
+       private:
+       private:
+        System::Void groupBox1_Enter(System::Object ^ sender, System::EventArgs ^ e) {}
     };
 }  // namespace icpproject

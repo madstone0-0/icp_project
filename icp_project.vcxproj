@@ -129,6 +129,8 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AddCourseForm.cpp" />
+    <ClCompile Include="AddScheduleForm.cpp" />
+    <ClCompile Include="AssignFacultyForm.cpp" />
     <ClCompile Include="EnrollForm.cpp" />
     <ClCompile Include="forms\AdminLoginForm.cpp" />
     <ClCompile Include="forms\AdminSignUpForm.cpp" />
@@ -136,7 +138,9 @@
     <ClCompile Include="forms\ChooseLoginForm.cpp" />
     <ClCompile Include="forms\EnumerationForm.cpp" />
     <ClCompile Include="forms\FacultyLoginForm.cpp" />
+    <ClCompile Include="GenerateTranscriptForm.cpp" />
     <ClCompile Include="MainForm.cpp" />
+    <ClCompile Include="ManagePrereqsForm.cpp" />
     <ClCompile Include="StudentLoginForm.cpp" />
     <ClCompile Include="StudentProfileForm.cpp" />
     <ClCompile Include="StudentScheduleForm.cpp" />
@@ -145,6 +149,9 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AddCourseForm.h">
+      <FileType>CppForm</FileType>
+    </ClInclude>
+    <ClInclude Include="AddScheduleForm.h">
       <FileType>CppForm</FileType>
     </ClInclude>
     <ClInclude Include="AdminLoginForm.h">
@@ -156,6 +163,9 @@
     <ClInclude Include="AllCoursesForm.h">
       <FileType>CppForm</FileType>
     </ClInclude>
+    <ClInclude Include="AssignFacultyForm.h">
+      <FileType>CppForm</FileType>
+    </ClInclude>
     <ClInclude Include="ChooseLoginForm.h">
       <FileType>CppForm</FileType>
     </ClInclude>
@@ -164,6 +174,12 @@
       <FileType>CppForm</FileType>
     </ClInclude>
     <ClInclude Include="EnumerationForm.h">
+      <FileType>CppForm</FileType>
+    </ClInclude>
+    <ClInclude Include="GenerateTranscriptForm.h">
+      <FileType>CppForm</FileType>
+    </ClInclude>
+    <ClInclude Include="ManagePrereqsForm.h">
       <FileType>CppForm</FileType>
     </ClInclude>
     <ClInclude Include="services\AuditService.h" />
@@ -214,6 +230,9 @@
     <EmbeddedResource Include="AllCoursesForm.resx">
       <DependentUpon>AllCoursesForm.h</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="AssignFacultyForm.resx">
+      <DependentUpon>AssignFacultyForm.h</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="ChooseLoginForm.resx">
       <DependentUpon>ChooseLoginForm.h</DependentUpon>
     </EmbeddedResource>
@@ -226,8 +245,14 @@
     <EmbeddedResource Include="FacultyLoginForm.resx">
       <DependentUpon>FacultyLoginForm.h</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="GenerateTranscriptForm.resx">
+      <DependentUpon>GenerateTranscriptForm.h</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="MainForm.resx">
       <DependentUpon>MainForm.h</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ManagePrereqsForm.resx">
+      <DependentUpon>ManagePrereqsForm.h</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="StudentLoginForm.resx">
       <DependentUpon>StudentLoginForm.h</DependentUpon>

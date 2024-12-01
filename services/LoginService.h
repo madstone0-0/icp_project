@@ -100,49 +100,6 @@ namespace icpproject {
         }
     };
 
-   public
-    value struct Student : public IUser {
-        int uid;
-        STR fname;
-        STR lname;
-        STR email;
-        STR dob;
-        PictureH picture;
-        Major major;
-        STR enrollDate;
-
-        virtual property int UID {
-            int get() { return uid; }
-            void set(int value) { uid = value; }
-        }
-
-        virtual property STR FirstName {
-            STR get() { return fname; }
-            void set(STR value) { fname = value; }
-        }
-
-        virtual property STR LastName {
-            STR get() { return lname; }
-            void set(STR value) { lname = value; }
-        }
-
-        virtual property STR Email {
-            STR get() { return email; }
-            void set(STR value) { email = value; }
-        }
-
-        Student(int u, STR f, STR l, STR e, STR d, PictureH p, Major m, STR en) {
-            uid = u;
-            fname = f;
-            lname = l;
-            email = e;
-            dob = d;
-            picture = p;
-            major = m;
-            enrollDate = en;
-        };
-    };
-
     // Attempt at abstraction
     // public
     // interface class IUserService {
