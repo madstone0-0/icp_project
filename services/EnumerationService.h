@@ -134,6 +134,39 @@ INNER JOIN USER ON
             }
         }
 
+        ServiceReturn<Faculty ^> GetFacultyById(long long uid) {
+            MySqlDataReader ^ reader = nullptr;
+            try {
+                STR query = R"(
+SELECT
+    u.uid,
+    fname AS "First Name",
+    lname AS "Last Name",
+    email AS "Email",
+    dept AS "Department"
+FROM
+    faculty f
+INNER JOIN USER u ON
+    f.uid = u.uid
+WHERE
+    u.uid = {0}
+)";
+                reader = db::Ins()->execute(String::Format(query, uid));
+                if (!reader->HasRows) throw gcnew Exception("Faculty does not exist");
+
+                reader->Read();
+                auto fname = reader->GetBodyDefinition("First Name");
+                auto lname = reader->GetBodyDefinition("Last Name");
+                auto email = reader->GetBodyDefinition("Email");
+                auto dept = parseStrDept(reader->GetBodyDefinition("Department"));
+                return {true, gcnew Faculty(uid, fname, lname, email, "N/A", dept)};
+            } finally {
+                if (reader != nullptr) {
+                    reader->Close();
+                }
+            }
+        }
+
         ServiceReturn<DataTable ^> GetAllFaculty() {
             MySqlDataReader ^ reader = nullptr;
             try {

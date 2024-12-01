@@ -73,6 +73,36 @@ namespace icpproject {
        public:
         PaymentsService(IUser ^ user) : UserService{user} {};
 
+        ServiceReturn<DataTable ^> GetAllOutstanding() {
+            MySqlDataReader ^ reader = nullptr;
+            try {
+                STR query = R"(
+SELECT
+    p.uid,
+    fname AS "First Name",
+    lname AS "Last Name",
+    total_amount AS "Total Amount",
+    paid_amount AS "Paid Amount"
+FROM
+    payments p
+INNER JOIN `user` u ON
+    u.uid = p.uid
+WHERE
+    paid_amount <> total_amount;
+)";
+                reader = db::Ins()->execute(query);
+                DataTable ^ dt = gcnew DataTable();
+                dt->Load(reader);
+
+                Audit::Ins()->Log("Viewed all outstanding payments", user->UID);
+                return {true, dt};
+            } finally {
+                if (reader != nullptr) {
+                    reader->Close();
+                }
+            }
+        }
+
         ServiceReturn<DataTable ^> GetAll() {
             MySqlDataReader ^ reader = nullptr;
             try {

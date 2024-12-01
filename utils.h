@@ -46,18 +46,22 @@ inline bool isAnyEmpty(List<STR> ^ strs) {
     return false;
 }
 
-inline STR parseDept(const Department& dept) {
+inline STR parseDept(Department dept, bool pretty = false) {
     switch (dept) {
         case Department::CS:
+            if (pretty) return "Computer Science";
             return "CS";
             break;
         case Department::HM:
+            if (pretty) return "Humanities";
             return "HM";
             break;
         case Department::EN:
+            if (pretty) return "Engineering";
             return "EN";
             break;
         case Department::BA:
+            if (pretty) return "Business Administration";
             return "BA";
             break;
     }
@@ -82,7 +86,7 @@ inline STR parseMajor(const Major& major) {
             return "MA";
             break;
         case Major::CE:
-            return "CA";
+            return "CE";
             break;
         case Major::EE:
             return "EE";
