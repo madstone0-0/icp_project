@@ -7,6 +7,7 @@
 #include "EnrollForm.h"
 #include "EnumerationForm.h"
 #include "GenerateTranscriptForm.h"
+#include "IssueBillsForm.h"
 #include "ManagePrereqsForm.h"
 #include "StudentProfileForm.h"
 #include "StudentScheduleForm.h"
@@ -18,6 +19,7 @@
 #include "services/EnrollService.h"
 #include "services/EnumerationService.h"
 #include "services/LoginService.h"
+#include "services/PaymentsService.h"
 #include "utils.h"
 
 namespace icpproject {
@@ -143,6 +145,15 @@ namespace icpproject {
 
        private:
         System::Windows::Forms::ToolStripMenuItem ^ manageCoursesToolStripMenuItem;
+
+       private:
+        System::Windows::Forms::ToolStripMenuItem ^ issuePaymentsToolStripMenuItem;
+
+       private:
+        System::Windows::Forms::ToolStripMenuItem ^ issueBillsToolStripMenuItem;
+
+       private:
+        System::Windows::Forms::ToolStripMenuItem ^ trackPaymentsToolStripMenuItem;
         EnumerationService ^ enumService;
 
        public:
@@ -216,6 +227,7 @@ namespace icpproject {
             this->facultyToolStripMenuItem1 = (gcnew System::Windows::Forms::ToolStripMenuItem());
             this->enrollmentsToolStripMenuItem = (gcnew System::Windows::Forms::ToolStripMenuItem());
             this->paymentsToolStripMenuItem = (gcnew System::Windows::Forms::ToolStripMenuItem());
+            this->issuePaymentsToolStripMenuItem = (gcnew System::Windows::Forms::ToolStripMenuItem());
             this->scheduleToolStripMenuItem = (gcnew System::Windows::Forms::ToolStripMenuItem());
             this->viewScheduleToolStripMenuItem = (gcnew System::Windows::Forms::ToolStripMenuItem());
             this->addScheduleToolStripMenuItem = (gcnew System::Windows::Forms::ToolStripMenuItem());
@@ -229,12 +241,14 @@ namespace icpproject {
             this->viewScheduleToolStripMenuItem1 = (gcnew System::Windows::Forms::ToolStripMenuItem());
             this->feesToolStripMenuItem = (gcnew System::Windows::Forms::ToolStripMenuItem());
             this->facultyToolStripMenuItem = (gcnew System::Windows::Forms::ToolStripMenuItem());
-            this->logoutToolStripMenuItem = (gcnew System::Windows::Forms::ToolStripMenuItem());
-            this->bindingSource1 = (gcnew System::Windows::Forms::BindingSource(this->components));
             this->profileToolStripMenuItem1 = (gcnew System::Windows::Forms::ToolStripMenuItem());
             this->coursesToolStripMenuItem1 = (gcnew System::Windows::Forms::ToolStripMenuItem());
             this->viewAssignedCourssToolStripMenuItem = (gcnew System::Windows::Forms::ToolStripMenuItem());
             this->manageCoursesToolStripMenuItem = (gcnew System::Windows::Forms::ToolStripMenuItem());
+            this->logoutToolStripMenuItem = (gcnew System::Windows::Forms::ToolStripMenuItem());
+            this->bindingSource1 = (gcnew System::Windows::Forms::BindingSource(this->components));
+            this->issueBillsToolStripMenuItem = (gcnew System::Windows::Forms::ToolStripMenuItem());
+            this->trackPaymentsToolStripMenuItem = (gcnew System::Windows::Forms::ToolStripMenuItem());
             this->menuStrip1->SuspendLayout();
             (cli::safe_cast<System::ComponentModel::ISupportInitialize ^>(this->bindingSource1))->BeginInit();
             this->SuspendLayout();
@@ -253,8 +267,9 @@ namespace icpproject {
             // adminToolStripMenuItem
             //
             this->adminToolStripMenuItem->DropDownItems->AddRange(
-                gcnew cli::array<System::Windows::Forms::ToolStripItem ^>(4){
-                    this->coursesToolStripMenuItem, this->enumerateToolStripMenuItem, this->scheduleToolStripMenuItem,
+                gcnew cli::array<System::Windows::Forms::ToolStripItem ^>(5){
+                    this->coursesToolStripMenuItem, this->enumerateToolStripMenuItem,
+                    this->issuePaymentsToolStripMenuItem, this->scheduleToolStripMenuItem,
                     this->auditLogToolStripMenuItem});
             this->adminToolStripMenuItem->Name = L"adminToolStripMenuItem";
             this->adminToolStripMenuItem->Size = System::Drawing::Size(55, 20);
@@ -268,7 +283,7 @@ namespace icpproject {
                     this->managePrerequistesToolStripMenuItem, this->facultyToolStripMenuItem2,
                     this->studentToolStripMenuItem1});
             this->coursesToolStripMenuItem->Name = L"coursesToolStripMenuItem";
-            this->coursesToolStripMenuItem->Size = System::Drawing::Size(131, 22);
+            this->coursesToolStripMenuItem->Size = System::Drawing::Size(180, 22);
             this->coursesToolStripMenuItem->Text = L"Courses";
             //
             // allCoursesToolStripMenuItem1
@@ -342,7 +357,7 @@ namespace icpproject {
                     this->studentsToolStripMenuItem, this->facultyToolStripMenuItem1,
                     this->enrollmentsToolStripMenuItem, this->paymentsToolStripMenuItem});
             this->enumerateToolStripMenuItem->Name = L"enumerateToolStripMenuItem";
-            this->enumerateToolStripMenuItem->Size = System::Drawing::Size(131, 22);
+            this->enumerateToolStripMenuItem->Size = System::Drawing::Size(180, 22);
             this->enumerateToolStripMenuItem->Text = L"Enumerate";
             //
             // studentsToolStripMenuItem
@@ -374,6 +389,17 @@ namespace icpproject {
             this->paymentsToolStripMenuItem->Name = L"paymentsToolStripMenuItem";
             this->paymentsToolStripMenuItem->Size = System::Drawing::Size(137, 22);
             this->paymentsToolStripMenuItem->Text = L"Payments";
+            this->paymentsToolStripMenuItem->Click +=
+                gcnew System::EventHandler(this, &MainForm::paymentsToolStripMenuItem_Click);
+            //
+            // issuePaymentsToolStripMenuItem
+            //
+            this->issuePaymentsToolStripMenuItem->DropDownItems->AddRange(
+                gcnew cli::array<System::Windows::Forms::ToolStripItem ^>(2){this->issueBillsToolStripMenuItem,
+                                                                             this->trackPaymentsToolStripMenuItem});
+            this->issuePaymentsToolStripMenuItem->Name = L"issuePaymentsToolStripMenuItem";
+            this->issuePaymentsToolStripMenuItem->Size = System::Drawing::Size(180, 22);
+            this->issuePaymentsToolStripMenuItem->Text = L"Payments";
             //
             // scheduleToolStripMenuItem
             //
@@ -381,13 +407,13 @@ namespace icpproject {
                 gcnew cli::array<System::Windows::Forms::ToolStripItem ^>(2){this->viewScheduleToolStripMenuItem,
                                                                              this->addScheduleToolStripMenuItem});
             this->scheduleToolStripMenuItem->Name = L"scheduleToolStripMenuItem";
-            this->scheduleToolStripMenuItem->Size = System::Drawing::Size(131, 22);
+            this->scheduleToolStripMenuItem->Size = System::Drawing::Size(180, 22);
             this->scheduleToolStripMenuItem->Text = L"Schedule";
             //
             // viewScheduleToolStripMenuItem
             //
             this->viewScheduleToolStripMenuItem->Name = L"viewScheduleToolStripMenuItem";
-            this->viewScheduleToolStripMenuItem->Size = System::Drawing::Size(150, 22);
+            this->viewScheduleToolStripMenuItem->Size = System::Drawing::Size(180, 22);
             this->viewScheduleToolStripMenuItem->Text = L"View Schedule";
             this->viewScheduleToolStripMenuItem->Click +=
                 gcnew System::EventHandler(this, &MainForm::viewScheduleToolStripMenuItem_Click);
@@ -395,7 +421,7 @@ namespace icpproject {
             // addScheduleToolStripMenuItem
             //
             this->addScheduleToolStripMenuItem->Name = L"addScheduleToolStripMenuItem";
-            this->addScheduleToolStripMenuItem->Size = System::Drawing::Size(150, 22);
+            this->addScheduleToolStripMenuItem->Size = System::Drawing::Size(180, 22);
             this->addScheduleToolStripMenuItem->Text = L"Add Schedule";
             this->addScheduleToolStripMenuItem->Click +=
                 gcnew System::EventHandler(this, &MainForm::addScheduleToolStripMenuItem_Click);
@@ -403,7 +429,7 @@ namespace icpproject {
             // auditLogToolStripMenuItem
             //
             this->auditLogToolStripMenuItem->Name = L"auditLogToolStripMenuItem";
-            this->auditLogToolStripMenuItem->Size = System::Drawing::Size(131, 22);
+            this->auditLogToolStripMenuItem->Size = System::Drawing::Size(180, 22);
             this->auditLogToolStripMenuItem->Text = L"Audit Log";
             this->auditLogToolStripMenuItem->Click +=
                 gcnew System::EventHandler(this, &MainForm::auditLogToolStripMenuItem_Click);
@@ -483,18 +509,10 @@ namespace icpproject {
             this->facultyToolStripMenuItem->Size = System::Drawing::Size(57, 20);
             this->facultyToolStripMenuItem->Text = L"Faculty";
             //
-            // logoutToolStripMenuItem
-            //
-            this->logoutToolStripMenuItem->Name = L"logoutToolStripMenuItem";
-            this->logoutToolStripMenuItem->Size = System::Drawing::Size(57, 20);
-            this->logoutToolStripMenuItem->Text = L"Logout";
-            this->logoutToolStripMenuItem->Click +=
-                gcnew System::EventHandler(this, &MainForm::logoutToolStripMenuItem_Click);
-            //
             // profileToolStripMenuItem1
             //
             this->profileToolStripMenuItem1->Name = L"profileToolStripMenuItem1";
-            this->profileToolStripMenuItem1->Size = System::Drawing::Size(180, 22);
+            this->profileToolStripMenuItem1->Size = System::Drawing::Size(116, 22);
             this->profileToolStripMenuItem1->Text = L"Profile";
             //
             // coursesToolStripMenuItem1
@@ -503,22 +521,44 @@ namespace icpproject {
                 gcnew cli::array<System::Windows::Forms::ToolStripItem ^>(2){this->viewAssignedCourssToolStripMenuItem,
                                                                              this->manageCoursesToolStripMenuItem});
             this->coursesToolStripMenuItem1->Name = L"coursesToolStripMenuItem1";
-            this->coursesToolStripMenuItem1->Size = System::Drawing::Size(180, 22);
+            this->coursesToolStripMenuItem1->Size = System::Drawing::Size(116, 22);
             this->coursesToolStripMenuItem1->Text = L"Courses";
             //
             // viewAssignedCourssToolStripMenuItem
             //
             this->viewAssignedCourssToolStripMenuItem->Name = L"viewAssignedCourssToolStripMenuItem";
-            this->viewAssignedCourssToolStripMenuItem->Size = System::Drawing::Size(180, 22);
+            this->viewAssignedCourssToolStripMenuItem->Size = System::Drawing::Size(162, 22);
             this->viewAssignedCourssToolStripMenuItem->Text = L"Manage Grades";
             //
             // manageCoursesToolStripMenuItem
             //
             this->manageCoursesToolStripMenuItem->Name = L"manageCoursesToolStripMenuItem";
-            this->manageCoursesToolStripMenuItem->Size = System::Drawing::Size(180, 22);
+            this->manageCoursesToolStripMenuItem->Size = System::Drawing::Size(162, 22);
             this->manageCoursesToolStripMenuItem->Text = L"Manage Courses";
             this->manageCoursesToolStripMenuItem->Click +=
                 gcnew System::EventHandler(this, &MainForm::manageCoursesToolStripMenuItem_Click);
+            //
+            // logoutToolStripMenuItem
+            //
+            this->logoutToolStripMenuItem->Name = L"logoutToolStripMenuItem";
+            this->logoutToolStripMenuItem->Size = System::Drawing::Size(57, 20);
+            this->logoutToolStripMenuItem->Text = L"Logout";
+            this->logoutToolStripMenuItem->Click +=
+                gcnew System::EventHandler(this, &MainForm::logoutToolStripMenuItem_Click);
+            //
+            // issueBillsToolStripMenuItem
+            //
+            this->issueBillsToolStripMenuItem->Name = L"issueBillsToolStripMenuItem";
+            this->issueBillsToolStripMenuItem->Size = System::Drawing::Size(180, 22);
+            this->issueBillsToolStripMenuItem->Text = L"Issue Bills";
+            this->issueBillsToolStripMenuItem->Click +=
+                gcnew System::EventHandler(this, &MainForm::issueBillsToolStripMenuItem_Click);
+            //
+            // trackPaymentsToolStripMenuItem
+            //
+            this->trackPaymentsToolStripMenuItem->Name = L"trackPaymentsToolStripMenuItem";
+            this->trackPaymentsToolStripMenuItem->Size = System::Drawing::Size(180, 22);
+            this->trackPaymentsToolStripMenuItem->Text = L"Track Payments";
             //
             // MainForm
             //
@@ -867,5 +907,34 @@ namespace icpproject {
 
        private:
         System::Void manageCoursesToolStripMenuItem_Click(System::Object ^ sender, System::EventArgs ^ e) {}
+
+       private:
+        System::Void paymentsToolStripMenuItem_Click(System::Object ^ sender, System::EventArgs ^ e) {
+            try {
+                auto paymentsService = gcnew PaymentsService(user);
+                auto payments = paymentsService->GetAll();
+                auto enumForm = gcnew EnumerationForm("Payments", payments);
+                enumForm->MdiParent = this;
+                enumForm->StartPosition = FormStartPosition::CenterScreen;
+                enumForm->Show();
+            } catch (Exception ^ e) {
+                errorMsg(e->Message);
+                MessageBox::Show(e->Message);
+            }
+        }
+
+       private:
+       private:
+        System::Void issueBillsToolStripMenuItem_Click(System::Object ^ sender, System::EventArgs ^ e) {
+            try {
+                auto issueBillsForm = gcnew IssueBillsForm(this);
+                issueBillsForm->MdiParent = this;
+                issueBillsForm->StartPosition = FormStartPosition::CenterScreen;
+                issueBillsForm->Show();
+            } catch (Exception ^ e) {
+                errorMsg(e->Message);
+                MessageBox::Show(e->Message);
+            }
+        }
     };
 }  // namespace icpproject

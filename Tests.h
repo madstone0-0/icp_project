@@ -35,6 +35,9 @@ namespace icpproject {
         runServiceTest(gcnew AdminService(), SignupUser{"Madiba", "Hudson-Quansah", "madmin@gmail.com", "madiba123"},
                        "Admin");
 
+        runServiceTest(gcnew AdminService(), SignupUser{"Madiba", "Hudson-Quansah", "mhquansah@gmail.com", "madiba123"},
+                       "Admin");
+
         // Student Service Test
         runServiceTest(gcnew StudentService(),
                        SignupStudent{"Madiba", "Hudson-Quansah", "mstu@gmail.com", "madiba123", "2004-01-18",

@@ -140,3 +140,25 @@ CREATE TABLE audit_log (
     timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     details TEXT
 );
+
+DELIMITER //
+
+CREATE TRIGGER update_payment_status 
+BEFORE UPDATE ON payments
+FOR EACH ROW
+BEGIN
+    -- If no amount has been paid, status remains 'pending'
+    IF NEW.paid_amount = 0 THEN
+        SET NEW.payment_status = 'pending';
+    
+    -- If paid amount is less than total amount, status is 'partial'
+    ELSEIF NEW.paid_amount > 0 AND NEW.paid_amount < NEW.total_amount THEN
+        SET NEW.payment_status = 'partial';
+    
+    -- If paid amount is equal to or greater than total amount, status is 'paid'
+    ELSEIF NEW.paid_amount >= NEW.total_amount THEN
+        SET NEW.payment_status = 'paid';
+    END IF;
+END;//
+
+DELIMITER ;

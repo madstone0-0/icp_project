@@ -139,6 +139,7 @@
     <ClCompile Include="forms\EnumerationForm.cpp" />
     <ClCompile Include="forms\FacultyLoginForm.cpp" />
     <ClCompile Include="GenerateTranscriptForm.cpp" />
+    <ClCompile Include="IssueBillsForm.cpp" />
     <ClCompile Include="MainForm.cpp" />
     <ClCompile Include="ManagePrereqsForm.cpp" />
     <ClCompile Include="StudentLoginForm.cpp" />
@@ -177,6 +178,9 @@
       <FileType>CppForm</FileType>
     </ClInclude>
     <ClInclude Include="GenerateTranscriptForm.h">
+      <FileType>CppForm</FileType>
+    </ClInclude>
+    <ClInclude Include="IssueBillsForm.h">
       <FileType>CppForm</FileType>
     </ClInclude>
     <ClInclude Include="ManagePrereqsForm.h">
@@ -250,6 +254,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="GenerateTranscriptForm.resx">
       <DependentUpon>GenerateTranscriptForm.h</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="IssueBillsForm.resx">
+      <DependentUpon>IssueBillsForm.h</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="MainForm.resx">
       <DependentUpon>MainForm.h</DependentUpon>

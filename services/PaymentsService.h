@@ -2,6 +2,7 @@
 #include "../db/Database.h"
 #include "../utils.h"
 #include "AuditService.h"
+#include "EnumerationService.h"
 #include "UserService.h"
 
 namespace icpproject {
@@ -63,6 +64,12 @@ namespace icpproject {
 
    public
     ref class PaymentsService : public UserService {
+       private:
+        bool doesPaymentExist(long long uid, Semester sem) {
+            return doesExist(String::Format("select uid, pid from payments where uid = {0} and sem = '{1}'", uid,
+                                            parseSemester(sem)));
+        }
+
        public:
         PaymentsService(IUser ^ user) : UserService{user} {};
 
@@ -140,8 +147,74 @@ namespace icpproject {
             }
         }
 
-        ServiceReturn<STR> IssueBills(Semester sem) {}
+        ServiceReturn<STR> IssueBills(Semester sem, double due) {
+            MySqlDataReader ^ reader = nullptr;
+            try {
+                auto enumService = gcnew EnumerationService(user);
+                auto students = gcnew List<Student>(0);
+                auto getRes = enumService->GetAllStudents(students);
+                if (!getRes.status) {
+                    throw gcnew Exception("Could not fetch students");
+                }
+                db::Ins()->beginTransaction();
+                try {
+                    ParamsH params = gcnew Params(0);
+                    int i = 0;
+                    for each (auto s in students) {
+                        if (doesPaymentExist(s.uid, sem)) {
+                            continue;
+                        }
 
-        ServiceReturn<STR> PayBill(long long uid, Semester sem, double amount) {}
+                        params->Add("@id", s.uid);
+                        params->Add("@sem", parseSemester(sem));
+                        params->Add("@tot", due);
+                        db::Ins()->executeNoRet(
+                            "insert into payments (uid, sem, total_amount, paid_amount) values (@id, @sem, @tot, 0)",
+                            params);
+                        i++;
+                    }
+
+                    Audit::Ins()->Log("Issued payments", user->UID,
+                                      String::Format("Issued payments to {0} students", i));
+                    db::Ins()->commit();
+                    return {true, String::Format("Issued payments to {0} students", i)};
+                } catch (Exception ^ e) {
+                    db::Ins()->rollback();
+                    throw;
+                }
+
+            } finally {
+                if (reader != nullptr) {
+                    reader->Close();
+                }
+            }
+        }
+
+        ServiceReturn<STR> PayBill(long long uid, Semester sem, double amount) {
+            MySqlDataReader ^ reader = nullptr;
+            try {
+                STR query = R"(
+UPDATE
+    payments
+SET
+    paid_amount = paid_amount + @amt
+WHERE
+    uid = @uid and sem = @sem
+)";
+                ParamsH params = gcnew Params(0);
+                params->Add("@uid", uid);
+                params->Add("@sem", parseSemester(sem));
+                params->Add("@amt", amount);
+                db::Ins()->executeNoRet(query, params);
+                Audit::Ins()->Log(
+                    "Paid bill", user->UID,
+                    String::Format("User ID: {0}, Semester: {1}, Amount: {2}", uid, parseSemester(sem), amount));
+                return {true, "Bill paid successfully"};
+            } finally {
+                if (reader != nullptr) {
+                    reader->Close();
+                }
+            }
+        }
     };
 }  // namespace icpproject
