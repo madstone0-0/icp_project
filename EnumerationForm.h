@@ -159,6 +159,7 @@ namespace icpproject {
             if (!enableSync) {
                 button1->Enabled = false;
                 button2->Enabled = false;
+                GV->ReadOnly = true;
                 GV->EditMode = DataGridViewEditMode::EditProgrammatically;
             }
         }

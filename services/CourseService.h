@@ -121,6 +121,37 @@ WHERE
             }
         }
 
+        ServiceReturn<STR> ClearAssignments(long long uid) {
+            MySqlDataReader ^ reader = nullptr;
+            try {
+                db::Ins()->executeNoRet(String::Format("delete from course_faculty where uid = {0}", uid));
+                return {true, "Faculty assignments cleared"};
+            } finally {
+                if (reader != nullptr) {
+                    reader->Close();
+                }
+            }
+        }
+
+        ServiceReturn<STR> UpdateFacultyAssignment(long long uid, long long cid) {
+            MySqlDataReader ^ reader = nullptr;
+            try {
+                if (!doesExist(
+                        String::Format("select * from course_faculty where cid = {0} and uid = {1}", cid, uid))) {
+                    return AssignFaculty(uid, cid);
+                }
+                db::Ins()->executeNoRet(
+                    String::Format("update course_faculty set uid = {0} where cid = {1}", uid, cid));
+
+                Audit::Ins()->Log("Updated faculty assignment", user->UID, "Faculty ID: " + uid + " Course ID: " + cid);
+                return {true, "Faculty assignment updated"};
+            } finally {
+                if (reader != nullptr) {
+                    reader->Close();
+                }
+            }
+        }
+
         ServiceReturn<Faculty ^> GetTeachingFaculty(long long cid) {
             MySqlDataReader ^ reader = nullptr;
             try {

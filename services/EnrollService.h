@@ -221,8 +221,25 @@ WHERE e.uid = {0}
         ServiceReturn<DataTable ^> GetAllEnrolledIn(long long cid, Semester sem) {
             MySqlDataReader ^ reader = nullptr;
             try {
-                reader = db::Ins()->execute(
-                    String::Format("select * from enrollment where cid = {0} and sem = {1}", cid, parseSemester(sem)));
+                STR query = R"(
+SELECT
+    e.uid AS "UID",
+    fname AS "First Name",
+    lname AS "Last Name",
+    sem AS "Semester",
+    grade AS "Grade"
+FROM
+    enrollment e
+INNER JOIN USER u ON
+    e.uid = u.uid
+INNER JOIN student s ON
+    s.uid = e.uid
+WHERE e.cid = @cid AND sem = @sem
+)";
+                ParamsH params = gcnew Params(2);
+                params->Add("@cid", cid);
+                params->Add("@sem", parseSemester(sem));
+                reader = db::Ins()->execute(query, params);
                 DataTable ^ dt = gcnew DataTable();
                 dt->Load(reader);
 

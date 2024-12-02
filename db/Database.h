@@ -98,6 +98,7 @@ namespace icpproject {
 
         MySqlDataReader ^
             execute(String ^ query, ParamsH paramMap) {
+                cmd->Parameters->Clear();
                 cmd->CommandText = query;
 
                 for each (STR key in paramMap->Keys) {
@@ -120,6 +121,7 @@ namespace icpproject {
         }
 
         int executeNoRet(String ^ query, ParamsH paramMap) {
+            cmd->Parameters->Clear();
             cmd->CommandText = query;
 
             for each (STR key in paramMap->Keys) {

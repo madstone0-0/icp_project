@@ -323,7 +323,28 @@ namespace icpproject {
             }
         }
 
-        System::Void button1_Click(System::Object ^ sender, System::EventArgs ^ e) {}
+        System::Void button1_Click(System::Object ^ sender, System::EventArgs ^ e) {
+            try {
+                auto selected = facBox->SelectedItem;
+                if (selected == nullptr) {
+                    return;
+                }
+                auto kvp = (KeyValuePair<long long, STR> ^) selected;
+                auto fid = kvp->Key;
+                auto clearRes = courseService->ClearAssignments(fid);
+                for each (auto item in courseBox->SelectedItems) {
+                    auto cid = ((KeyValuePair<long long, STR> ^) item)->Key;
+                    auto res = courseService->UpdateFacultyAssignment(fid, cid);
+                    if (!res.status) {
+                        throw gcnew Exception("Could not update faculty assignment");
+                    }
+                }
+                MessageBox::Show("Faculty assignments updated successfully");
+            } catch (Exception ^ e) {
+                errorMsg(e->Message);
+                MessageBox::Show(e->Message);
+            }
+        }
 
        private:
         System::Void ViewAssignmentsForm_Load(System::Object ^ sender, System::EventArgs ^ e) {

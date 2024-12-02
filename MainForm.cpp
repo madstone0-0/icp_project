@@ -6,7 +6,7 @@
 using namespace System;
 using namespace System::Windows::Forms;
 
-int main(cli::array<System::String ^> ^ args) {
+[STAThread] int main(cli::array<System::String ^> ^ args) {
     using namespace icpproject;
     Application::EnableVisualStyles();
     Application::SetCompatibleTextRenderingDefault(false);
