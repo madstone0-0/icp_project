@@ -316,9 +316,15 @@ namespace icpproject {
                     reader = db::Ins()->execute("select * from student where uid = " + Convert::ToString(uid));
                     reader->Read();
                     auto dob = reader->GetBodyDefinition("dob");
-                    auto pictureLen = reader->GetBytes(reader->GetOrdinal("picture"), 0, nullptr, 0, 0);
-                    PictureH picture = gcnew Picture(pictureLen);
-                    reader->GetBytes(reader->GetOrdinal("picture"), 0, picture, 0, pictureLen);
+                    PictureH picture = gcnew Picture(0);
+                    try {
+                        auto pictureLen = reader->GetBytes(reader->GetOrdinal("picture"), 0, nullptr, 0, 0);
+                        picture = gcnew Picture(pictureLen);
+                        reader->GetBytes(reader->GetOrdinal("picture"), 0, picture, 0, pictureLen);
+                    } catch (Exception ^ e) {
+                        errorMsg(e->Message, "StudentLogin");
+                        picture = gcnew Picture(0);
+                    }
                     auto major = parseStrMajor(reader->GetBodyDefinition("major"));
                     auto enrollDate = reader->GetBodyDefinition("enrollDate");
                     reader->Close();

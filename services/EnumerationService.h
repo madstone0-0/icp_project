@@ -49,7 +49,7 @@ ON
                         reader->GetBytes(reader->GetOrdinal("picture"), 0, picture, 0, pictureLen);
                     } catch (Exception ^ e) {
                         errorMsg(e->Message);
-                        MessageBox::Show(e->Message);
+                        // MessageBox::Show(e->Message);
                         picture = gcnew Picture(0);
                     }
                     auto major = parseStrMajor(reader->GetBodyDefinition("Major"));

@@ -245,17 +245,18 @@ namespace icpproject {
                 auto transcript = res.data;
                 auto semMap = gcnew Dictionary<STR, List<TranscriptItem> ^>(0);
                 double cGPA = 0;
+                auto count = transcript->Count;
                 for each (auto item in transcript) {
                     if (!semMap->ContainsKey(parseSemester(item.sem))) {
                         semMap->Add(parseSemester(item.sem), gcnew List<TranscriptItem>(0));
                     }
-
+                    if (item.grade == Grade::NG) count--;
                     auto semList = gcnew List<TranscriptItem>(0);
                     semMap->TryGetValue(parseSemester(item.sem), semList);
                     semList->Add(item);
                     cGPA += gradeToCredits(item.grade) * item.credits;
                 }
-                cGPA /= transcript->Count;
+                cGPA /= count;
                 cgpaLab->Text = Convert::ToString(cGPA);
                 sem1Trans->Text = "";
                 sem2Trans->Text = "";
@@ -264,15 +265,18 @@ namespace icpproject {
                 auto sem2List = gcnew List<TranscriptItem>(0);
                 semMap->TryGetValue(parseSemester(Semester::S1), sem1List);
                 semMap->TryGetValue(parseSemester(Semester::S2), sem2List);
-                for each (auto item in sem1List) {
-                    sem1Trans->Text +=
-                        String::Format("{0} - {1} - {2}\n", item.cname, parseGrade(item.grade, true), item.credits);
-                }
 
-                for each (auto item in sem2List) {
-                    sem2Trans->Text +=
-                        String::Format("{0} - {1} - {2}\n", item.cname, parseGrade(item.grade, true), item.credits);
-                }
+                if (sem1List != nullptr && sem1List->Count != 0)
+                    for each (auto item in sem1List) {
+                        sem1Trans->Text +=
+                            String::Format("{0} - {1} - {2}\n", item.cname, parseGrade(item.grade, true), item.credits);
+                    }
+
+                if (sem2List != nullptr && sem2List->Count != 0)
+                    for each (auto item in sem2List) {
+                        sem2Trans->Text +=
+                            String::Format("{0} - {1} - {2}\n", item.cname, parseGrade(item.grade, true), item.credits);
+                    }
             } catch (Exception ^ e) {
                 errorMsg(e->Message);
                 MessageBox::Show(e->Message);

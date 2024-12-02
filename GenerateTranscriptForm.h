@@ -64,8 +64,6 @@ namespace icpproject {
         System::Windows::Forms::Panel ^ panel1;
 
        private:
-        System::Windows::Forms::VScrollBar ^ vScrollBar1;
-
        private:
         System::Windows::Forms::Label ^ label2;
 
@@ -82,8 +80,6 @@ namespace icpproject {
         System::Windows::Forms::Label ^ label1;
 
        private:
-        System::Windows::Forms::VScrollBar ^ vScrollBar2;
-
        private:
         /// <summary>
         /// Required designer variable.
@@ -102,11 +98,9 @@ namespace icpproject {
             this->cgpaLab = (gcnew System::Windows::Forms::Label());
             this->label1 = (gcnew System::Windows::Forms::Label());
             this->panel2 = (gcnew System::Windows::Forms::Panel());
-            this->vScrollBar2 = (gcnew System::Windows::Forms::VScrollBar());
             this->label3 = (gcnew System::Windows::Forms::Label());
             this->sem2Trans = (gcnew System::Windows::Forms::Label());
             this->panel1 = (gcnew System::Windows::Forms::Panel());
-            this->vScrollBar1 = (gcnew System::Windows::Forms::VScrollBar());
             this->label2 = (gcnew System::Windows::Forms::Label());
             this->sem1Trans = (gcnew System::Windows::Forms::Label());
             this->studentNameYear = (gcnew System::Windows::Forms::Label());
@@ -185,20 +179,12 @@ namespace icpproject {
             //
             // panel2
             //
-            this->panel2->Controls->Add(this->vScrollBar2);
             this->panel2->Controls->Add(this->label3);
             this->panel2->Controls->Add(this->sem2Trans);
             this->panel2->Location = System::Drawing::Point(16, 232);
             this->panel2->Name = L"panel2";
             this->panel2->Size = System::Drawing::Size(504, 176);
             this->panel2->TabIndex = 6;
-            //
-            // vScrollBar2
-            //
-            this->vScrollBar2->Location = System::Drawing::Point(488, 0);
-            this->vScrollBar2->Name = L"vScrollBar2";
-            this->vScrollBar2->Size = System::Drawing::Size(17, 176);
-            this->vScrollBar2->TabIndex = 5;
             //
             // label3
             //
@@ -226,20 +212,12 @@ namespace icpproject {
             //
             // panel1
             //
-            this->panel1->Controls->Add(this->vScrollBar1);
             this->panel1->Controls->Add(this->label2);
             this->panel1->Controls->Add(this->sem1Trans);
             this->panel1->Location = System::Drawing::Point(16, 64);
             this->panel1->Name = L"panel1";
             this->panel1->Size = System::Drawing::Size(504, 160);
             this->panel1->TabIndex = 5;
-            //
-            // vScrollBar1
-            //
-            this->vScrollBar1->Location = System::Drawing::Point(488, 0);
-            this->vScrollBar1->Name = L"vScrollBar1";
-            this->vScrollBar1->Size = System::Drawing::Size(17, 160);
-            this->vScrollBar1->TabIndex = 4;
             //
             // label2
             //
@@ -319,17 +297,18 @@ namespace icpproject {
                 auto transcript = res.data;
                 auto semMap = gcnew Dictionary<STR, List<TranscriptItem> ^>(0);
                 double cGPA = 0;
+                auto count = transcript->Count;
                 for each (auto item in transcript) {
                     if (!semMap->ContainsKey(parseSemester(item.sem))) {
                         semMap->Add(parseSemester(item.sem), gcnew List<TranscriptItem>(0));
                     }
-
+                    if (item.grade == Grade::NG) count--;
                     auto semList = gcnew List<TranscriptItem>(0);
                     semMap->TryGetValue(parseSemester(item.sem), semList);
                     semList->Add(item);
                     cGPA += gradeToCredits(item.grade) * item.credits;
                 }
-                cGPA /= transcript->Count;
+                cGPA /= count;
                 cgpaLab->Text = Convert::ToString(cGPA);
                 studentNameYear->Text = kvp->Value;
                 sem1Trans->Text = "";
@@ -339,15 +318,18 @@ namespace icpproject {
                 auto sem2List = gcnew List<TranscriptItem>(1);
                 semMap->TryGetValue(parseSemester(Semester::S1), sem1List);
                 semMap->TryGetValue(parseSemester(Semester::S2), sem2List);
-                for each (auto item in sem1List) {
-                    sem1Trans->Text +=
-                        String::Format("{0} - {1} - {2}\n", item.cname, parseGrade(item.grade, true), item.credits);
-                }
 
-                for each (auto item in sem2List) {
-                    sem2Trans->Text +=
-                        String::Format("{0} - {1} - {2}\n", item.cname, parseGrade(item.grade, true), item.credits);
-                }
+                if (sem1List != nullptr && sem1List->Count != 0)
+                    for each (auto item in sem1List) {
+                        sem1Trans->Text +=
+                            String::Format("{0} - {1} - {2}\n", item.cname, parseGrade(item.grade, true), item.credits);
+                    }
+
+                if (sem2List != nullptr && sem2List->Count != 0)
+                    for each (auto item in sem2List) {
+                        sem2Trans->Text +=
+                            String::Format("{0} - {1} - {2}\n", item.cname, parseGrade(item.grade, true), item.credits);
+                    }
 
             } catch (Exception ^ e) {
                 errorMsg(e->Message);

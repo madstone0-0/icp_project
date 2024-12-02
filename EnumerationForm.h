@@ -116,6 +116,9 @@ namespace icpproject {
             //
             // button1
             //
+            this->button1->Anchor = static_cast<System::Windows::Forms::AnchorStyles>(
+                ((System::Windows::Forms::AnchorStyles::Bottom | System::Windows::Forms::AnchorStyles::Left) |
+                 System::Windows::Forms::AnchorStyles::Right));
             this->button1->Location = System::Drawing::Point(328, 424);
             this->button1->Name = L"button1";
             this->button1->Size = System::Drawing::Size(112, 23);
@@ -126,6 +129,9 @@ namespace icpproject {
             //
             // button2
             //
+            this->button2->Anchor = static_cast<System::Windows::Forms::AnchorStyles>(
+                ((System::Windows::Forms::AnchorStyles::Bottom | System::Windows::Forms::AnchorStyles::Left) |
+                 System::Windows::Forms::AnchorStyles::Right));
             this->button2->Location = System::Drawing::Point(472, 424);
             this->button2->Name = L"button2";
             this->button2->Size = System::Drawing::Size(112, 23);

@@ -126,16 +126,19 @@ namespace icpproject {
             this->splitContainer1->Panel2->Controls->Add(this->label1);
             this->splitContainer1->Panel2->Controls->Add(this->saveButton);
             this->splitContainer1->Panel2->Controls->Add(this->group);
-            this->splitContainer1->Size = System::Drawing::Size(740, 389);
-            this->splitContainer1->SplitterDistance = 246;
+            this->splitContainer1->Size = System::Drawing::Size(765, 409);
+            this->splitContainer1->SplitterDistance = 254;
             this->splitContainer1->TabIndex = 0;
             //
             // facBox
             //
+            this->facBox->Anchor = static_cast<System::Windows::Forms::AnchorStyles>(
+                ((System::Windows::Forms::AnchorStyles::Top | System::Windows::Forms::AnchorStyles::Bottom) |
+                 System::Windows::Forms::AnchorStyles::Left));
             this->facBox->FormattingEnabled = true;
             this->facBox->Location = System::Drawing::Point(8, 8);
             this->facBox->Name = L"facBox";
-            this->facBox->Size = System::Drawing::Size(232, 381);
+            this->facBox->Size = System::Drawing::Size(240, 394);
             this->facBox->TabIndex = 0;
             this->facBox->SelectedIndexChanged +=
                 gcnew System::EventHandler(this, &ViewAssignmentsForm::facBox_SelectedIndexChanged);
@@ -214,7 +217,9 @@ namespace icpproject {
             //
             // saveButton
             //
-            this->saveButton->Location = System::Drawing::Point(216, 360);
+            this->saveButton->Anchor = static_cast<System::Windows::Forms::AnchorStyles>(
+                (System::Windows::Forms::AnchorStyles::Bottom | System::Windows::Forms::AnchorStyles::Left));
+            this->saveButton->Location = System::Drawing::Point(216, 376);
             this->saveButton->Name = L"saveButton";
             this->saveButton->Size = System::Drawing::Size(75, 23);
             this->saveButton->TabIndex = 2;
@@ -227,7 +232,7 @@ namespace icpproject {
             this->group->Controls->Add(this->courseBox);
             this->group->Location = System::Drawing::Point(8, 184);
             this->group->Name = L"group";
-            this->group->Size = System::Drawing::Size(472, 168);
+            this->group->Size = System::Drawing::Size(472, 184);
             this->group->TabIndex = 1;
             this->group->TabStop = false;
             this->group->Text = L"Assigned Courses";
@@ -244,7 +249,7 @@ namespace icpproject {
             //
             this->AutoScaleDimensions = System::Drawing::SizeF(6, 13);
             this->AutoScaleMode = System::Windows::Forms::AutoScaleMode::Font;
-            this->ClientSize = System::Drawing::Size(740, 389);
+            this->ClientSize = System::Drawing::Size(765, 409);
             this->Controls->Add(this->splitContainer1);
             this->Name = L"ViewAssignmentsForm";
             this->Text = L"ViewAssignmentsForm";

@@ -119,7 +119,7 @@ create table enrollment (
     'F+',
     'F',
     "NG"
-  ),
+  ) default "NG",
   foreign key (uid) references student (uid) ON DELETE CASCADE,
   foreign key (cid) references course (cid) ON DELETE CASCADE
 );
@@ -162,3 +162,106 @@ BEGIN
 END;//
 
 DELIMITER ;
+
+-- User table
+INSERT INTO user (fname, lname, email, password)
+VALUES
+('Madiba', 'Hudson-Quansah', 'mhquansah@gmail.com', '1411241789187772614611123143241611482201152118099233');
+
+-- Admin table
+INSERT INTO admin (uid)
+VALUES (1);
+
+-- Add 30 students
+INSERT INTO user (fname, lname, email, password)
+SELECT CONCAT('Student', FLOOR(RAND() * 10000)),
+       'LastName',
+       CONCAT('student', FLOOR(RAND() * 10000), '@example.com'),
+       '1411241789187772614611123143241611482201152118099233'
+FROM (SELECT 1 UNION ALL SELECT 2 UNION ALL SELECT 3 UNION ALL SELECT 4 UNION ALL SELECT 5 UNION ALL SELECT 6 UNION ALL SELECT 7 UNION ALL SELECT 8 UNION ALL SELECT 9 UNION ALL SELECT 10) T1,
+     (SELECT 1 UNION ALL SELECT 2 UNION ALL SELECT 3) T2
+LIMIT 30;
+
+INSERT INTO student (uid, dob, picture, major, enrolldate)
+SELECT uid,
+       DATE_ADD('2000-01-01', INTERVAL FLOOR(RAND() * 7300) DAY),
+       NULL,
+       ELT(FLOOR(1 + (RAND() * 7)), 'CS', 'BA', 'EN', 'ME', 'EE', 'CE', 'MA'),
+       DATE_ADD('2020-01-01', INTERVAL FLOOR(RAND() * 1000) DAY)
+FROM user
+WHERE uid > 1;
+
+-- Add 30 faculty members
+INSERT INTO user (fname, lname, email, password)
+SELECT CONCAT('Faculty', FLOOR(RAND() * 10000)),
+       'LastName',
+       CONCAT('faculty', FLOOR(RAND() * 10000), '@example.com'),
+       '1411241789187772614611123143241611482201152118099233'
+FROM (SELECT 1 UNION ALL SELECT 2 UNION ALL SELECT 3 UNION ALL SELECT 4 UNION ALL SELECT 5 UNION ALL SELECT 6 UNION ALL SELECT 7 UNION ALL SELECT 8 UNION ALL SELECT 9 UNION ALL SELECT 10) T1,
+     (SELECT 1 UNION ALL SELECT 2 UNION ALL SELECT 3) T2
+LIMIT 30;
+
+INSERT INTO faculty (uid, appdate, dept)
+SELECT uid,
+       CURDATE(),
+       ELT(FLOOR(1 + (RAND() * 4)), 'CS', 'HM', 'EN', 'BA')
+FROM user
+WHERE uid > 31;
+
+-- Add 30 courses
+-- Insert 10 courses with random attributes
+INSERT INTO course (cname, credits, sem, capacity)
+VALUES 
+  ('Intro to Programming', 1.0, 'S1', 40),
+  ('Linear Algebra', 1.0, 'S1', 40),
+  ('Database Systems', 1.0, 'S2', 40),
+  ('Marketing Principles', 0.5, 'S1', 30),
+  ('Thermodynamics', 1.0, 'S2', 40),
+  ('Digital Circuits', 0.5, 'S2', 30),
+  ('Project Management', 1.0, 'S1', 40),
+  ('Quantum Physics', 1.0, 'S2', 30),
+  ('Artificial Intelligence', 1.0, 'S1', 40),
+  ('Ethics in Engineering', 0.5, 'S2', 30);
+
+-- Assign faculty to courses
+INSERT INTO course_faculty (uid, cid)
+SELECT F.uid, C.cid
+FROM faculty F
+CROSS JOIN course C
+WHERE F.uid > 31
+LIMIT 30;
+
+-- Enroll students in courses
+INSERT INTO enrollment (uid, cid, sem)
+SELECT S.uid, C.cid, ELT(FLOOR(1 + (RAND() * 2)), 'S1', 'S2')
+FROM student S
+CROSS JOIN course C
+LIMIT 200;
+
+-- Reset schedule table to avoid duplicates
+DELETE FROM schedule;
+
+-- Variables for dynamic scheduling
+SET @start_time = '08:00:00'; -- Start time for the first class
+SET @end_time = '18:00:00'; -- End time for the last class
+SET @current_time = @start_time; -- Initialize current time
+SET @day_index = 1; -- Start with Monday
+SET @max_days = 5; -- Total days in the week (Monday to Friday)
+
+-- Loop through courses to assign non-colliding schedules
+INSERT INTO schedule (cid, starttime, endtime, day)
+SELECT C.cid,
+       @current_time AS starttime,
+       ADDTIME(@current_time, '02:00:00') AS endtime,
+       ELT(@day_index, 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday') AS day
+FROM course C
+WHERE (@current_time := CASE
+         WHEN ADDTIME(@current_time, '02:00:00') >= @end_time THEN '08:00:00'
+         ELSE ADDTIME(@current_time, '02:00:00')
+       END) IS NOT NULL
+AND (@day_index := CASE
+         WHEN ADDTIME(@current_time, '02:00:00') >= @end_time THEN @day_index + 1
+         ELSE @day_index
+       END) <= @max_days;
+
+

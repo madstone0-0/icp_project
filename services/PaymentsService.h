@@ -194,7 +194,7 @@ WHERE
                         if (doesPaymentExist(s.uid, sem)) {
                             continue;
                         }
-
+                        params->Clear();
                         params->Add("@id", s.uid);
                         params->Add("@sem", parseSemester(sem));
                         params->Add("@tot", due);
