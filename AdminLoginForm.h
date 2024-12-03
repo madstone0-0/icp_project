@@ -251,7 +251,10 @@ namespace icpproject {
         }
 
        private:
-        System::Void AdminLoginForm_Load(System::Object ^ sender, System::EventArgs ^ e) {}
+        System::Void AdminLoginForm_Load(System::Object ^ sender, System::EventArgs ^ e) {
+            this->FormBorderStyle = System::Windows::Forms::FormBorderStyle::FixedSingle;
+            passwordTB->UseSystemPasswordChar = true;
+        }
 
        private:
         System::Void button1_Click(System::Object ^ sender, System::EventArgs ^ e) {

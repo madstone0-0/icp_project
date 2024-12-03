@@ -477,6 +477,7 @@ namespace icpproject {
 
                 Audit::Ins()->Log("Synced grades", parent->user->UID, "Course ID: " + cid);
                 MessageBox::Show("Synced");
+                rosterGV->Refresh();
             } catch (Exception ^ e) {
                 errorMsg(e->Message);
                 MessageBox::Show(e->Message);

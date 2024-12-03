@@ -1,5 +1,6 @@
 #pragma once
 #include "./utils.h"
+#include "FacultySignUpForm.h"
 #include "services/LoginService.h"
 
 namespace icpproject {
@@ -108,6 +109,8 @@ namespace icpproject {
             this->linkLabel1->TabIndex = 14;
             this->linkLabel1->TabStop = true;
             this->linkLabel1->Text = L"Don\'t have an account\? Sign Up";
+            this->linkLabel1->LinkClicked += gcnew System::Windows::Forms::LinkLabelLinkClickedEventHandler(
+                this, &FacultyLoginForm::linkLabel1_LinkClicked);
             //
             // label3
             //
@@ -186,6 +189,7 @@ namespace icpproject {
             this->Controls->Add(this->label1);
             this->Name = L"FacultyLoginForm";
             this->Text = L"FacultyLoginForm";
+            this->Load += gcnew System::EventHandler(this, &FacultyLoginForm::FacultyLoginForm_Load);
             this->ResumeLayout(false);
             this->PerformLayout();
         }
@@ -231,6 +235,28 @@ namespace icpproject {
         System::Void button1_Click(System::Object ^ sender, System::EventArgs ^ e) {
             this->Close();
             parent->showChooseForm();
+        }
+
+       private:
+        System::Void FacultyLoginForm_Load(System::Object ^ sender, System::EventArgs ^ e) {
+            this->FormBorderStyle = System::Windows::Forms::FormBorderStyle::FixedSingle;
+
+            passwordTB->UseSystemPasswordChar = true;
+        }
+
+       private:
+        System::Void linkLabel1_LinkClicked(System::Object ^ sender,
+                                            System::Windows::Forms::LinkLabelLinkClickedEventArgs ^ e) {
+            try {
+                auto signupForm = gcnew FacultySignUpForm(this);
+                signupForm->MdiParent = this->MdiParent;
+                signupForm->StartPosition = FormStartPosition::CenterScreen;
+                signupForm->Show();
+                this->Hide();
+            } catch (Exception ^ e) {
+                errorMsg(e->Message);
+                MessageBox::Show(e->Message);
+            }
         }
     };
 }  // namespace icpproject

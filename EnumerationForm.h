@@ -87,14 +87,12 @@ namespace icpproject {
             //
             // label1
             //
-            this->label1->Anchor = static_cast<System::Windows::Forms::AnchorStyles>(
-                ((System::Windows::Forms::AnchorStyles::Top | System::Windows::Forms::AnchorStyles::Left) |
-                 System::Windows::Forms::AnchorStyles::Right));
+            this->label1->Anchor = System::Windows::Forms::AnchorStyles::Top;
             this->label1->AutoSize = true;
             this->label1->Font =
                 (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 27.75F, System::Drawing::FontStyle::Regular,
                                              System::Drawing::GraphicsUnit::Point, static_cast<System::Byte>(0)));
-            this->label1->Location = System::Drawing::Point(408, 8);
+            this->label1->Location = System::Drawing::Point(424, 16);
             this->label1->Name = L"label1";
             this->label1->Size = System::Drawing::Size(110, 42);
             this->label1->TabIndex = 3;
@@ -117,8 +115,7 @@ namespace icpproject {
             // button1
             //
             this->button1->Anchor = static_cast<System::Windows::Forms::AnchorStyles>(
-                ((System::Windows::Forms::AnchorStyles::Bottom | System::Windows::Forms::AnchorStyles::Left) |
-                 System::Windows::Forms::AnchorStyles::Right));
+                (System::Windows::Forms::AnchorStyles::Bottom | System::Windows::Forms::AnchorStyles::Left));
             this->button1->Location = System::Drawing::Point(328, 424);
             this->button1->Name = L"button1";
             this->button1->Size = System::Drawing::Size(112, 23);
@@ -130,8 +127,7 @@ namespace icpproject {
             // button2
             //
             this->button2->Anchor = static_cast<System::Windows::Forms::AnchorStyles>(
-                ((System::Windows::Forms::AnchorStyles::Bottom | System::Windows::Forms::AnchorStyles::Left) |
-                 System::Windows::Forms::AnchorStyles::Right));
+                (System::Windows::Forms::AnchorStyles::Bottom | System::Windows::Forms::AnchorStyles::Right));
             this->button2->Location = System::Drawing::Point(472, 424);
             this->button2->Name = L"button2";
             this->button2->Size = System::Drawing::Size(112, 23);

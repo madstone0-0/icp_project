@@ -44,9 +44,14 @@ ON
                     auto dob = reader->GetBodyDefinition("Date_Of_Birth");
                     PictureH picture;
                     try {
-                        auto pictureLen = reader->GetBytes(reader->GetOrdinal("picture"), 0, nullptr, 0, 0);
-                        picture = gcnew Picture(pictureLen);
-                        reader->GetBytes(reader->GetOrdinal("picture"), 0, picture, 0, pictureLen);
+                        int ordinal = reader->GetOrdinal("picture");
+                        if (reader->IsDBNull(ordinal)) {
+                            picture = gcnew Picture(0);
+                        } else {
+                            auto pictureLen = reader->GetBytes(reader->GetOrdinal("picture"), 0, nullptr, 0, 0);
+                            picture = gcnew Picture(pictureLen);
+                            reader->GetBytes(reader->GetOrdinal("picture"), 0, picture, 0, pictureLen);
+                        }
                     } catch (Exception ^ e) {
                         errorMsg(e->Message);
                         // MessageBox::Show(e->Message);
@@ -160,6 +165,58 @@ WHERE
                 auto email = reader->GetBodyDefinition("Email");
                 auto dept = parseStrDept(reader->GetBodyDefinition("Department"));
                 return {true, gcnew Faculty(uid, fname, lname, email, "N/A", dept)};
+            } finally {
+                if (reader != nullptr) {
+                    reader->Close();
+                }
+            }
+        }
+
+        ServiceReturn<Student ^> GetStudentById(long long uid) {
+            MySqlDataReader ^ reader = nullptr;
+            try {
+                STR query = R"(
+SELECT
+    u.uid,
+    fname AS "First Name",
+    lname AS "Last Name",
+    email AS "Email",
+    dob AS "Date Of Birth",
+    picture AS "Picture",
+    major AS "Major",
+    enrolldate AS "Enroll Date"
+FROM
+    student s
+INNER JOIN USER u ON
+    s.uid = u.uid
+WHERE
+    u.uid = {0}
+)";
+                reader = db::Ins()->execute(String::Format(query, uid));
+                if (!reader->HasRows) throw gcnew Exception("Student does not exist");
+                reader->Read();
+                auto fname = reader->GetBodyDefinition("First Name");
+                auto lname = reader->GetBodyDefinition("Last Name");
+                auto email = reader->GetBodyDefinition("Email");
+                auto dob = reader->GetBodyDefinition("Date Of Birth");
+                PictureH picture;
+                try {
+                    int ordinal = reader->GetOrdinal("picture");
+                    if (reader->IsDBNull(ordinal)) {
+                        picture = gcnew Picture(0);
+                    } else {
+                        auto pictureLen = reader->GetBytes(reader->GetOrdinal("picture"), 0, nullptr, 0, 0);
+                        picture = gcnew Picture(pictureLen);
+                        reader->GetBytes(reader->GetOrdinal("picture"), 0, picture, 0, pictureLen);
+                    }
+                } catch (Exception ^ e) {
+                    errorMsg(e->Message);
+                    // MessageBox::Show(e->Message);
+                    picture = gcnew Picture(0);
+                }
+                auto major = parseStrMajor(reader->GetBodyDefinition("Major"));
+                auto enrollDate = reader->GetBodyDefinition("Enroll Date");
+                return {true, gcnew Student(uid, fname, lname, email, dob, picture, major, enrollDate)};
             } finally {
                 if (reader != nullptr) {
                     reader->Close();

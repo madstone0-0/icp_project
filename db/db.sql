@@ -141,6 +141,22 @@ CREATE TABLE audit_log (
     details TEXT
 );
 
+-- Indices
+CREATE INDEX idx_course_name ON course (cname);
+CREATE INDEX idx_course_sem ON course (sem);
+
+CREATE INDEX idx_enrollment_uid ON enrollment (uid);
+CREATE INDEX idx_enrollment_cid ON enrollment (cid);
+CREATE INDEX idx_enrollment_sem ON enrollmen 09t (sem);
+
+CREATE INDEX idx_schedule_cid ON schedule (cid);
+CREATE INDEX idx_schedule_day ON schedule (day);
+
+CREATE INDEX idx_user_email_password ON user (email, password);
+CREATE INDEX idx_payments_uid_status_sem ON payments (uid, payment_status, sem);
+CREATE INDEX idx_course_faculty_uid_cid ON course_faculty (uid, cid);
+
+
 DELIMITER //
 
 CREATE TRIGGER update_payment_status 
@@ -172,6 +188,16 @@ VALUES
 INSERT INTO admin (uid)
 VALUES (1);
 
+INSERT INTO USER (fname, lname ,email, password)
+VALUES
+('Madiba', 'Hudson-Quansah', 'mfac@gmail.com', '1411241789187772614611123143241611482201152118099233'),
+('Madiba', 'Hudson-Quansah', 'mstu@gmail.com', '1411241789187772614611123143241611482201152118099233');
+INSERT INTO faculty (uid, appdate, dept) VALUES
+(2,"2024-12-02", "CS");
+INSERT INTO student(uid, dob, major, enrolldate) 
+VALUES
+(3, "2004-12-02", "CS", "2024-12-02");
+
 -- Add 30 students
 INSERT INTO user (fname, lname, email, password)
 SELECT CONCAT('Student', FLOOR(RAND() * 10000)),
@@ -189,7 +215,7 @@ SELECT uid,
        ELT(FLOOR(1 + (RAND() * 7)), 'CS', 'BA', 'EN', 'ME', 'EE', 'CE', 'MA'),
        DATE_ADD('2020-01-01', INTERVAL FLOOR(RAND() * 1000) DAY)
 FROM user
-WHERE uid > 1;
+WHERE uid > 3;
 
 -- Add 30 faculty members
 INSERT INTO user (fname, lname, email, password)

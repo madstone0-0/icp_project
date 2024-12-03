@@ -81,6 +81,15 @@
     <ClCompile Include="FacultyCoursesForm.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="StudentSignUpForm].cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="FacultySignUpForm.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="FeesForm.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="MainForm.h">
@@ -191,6 +200,15 @@
     <ClInclude Include="FacultyCoursesForm.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="StudentSignUpForm].h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="FacultySignUpForm.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="FeesForm.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="icp_project.rc">
@@ -205,6 +223,9 @@
       <Filter>Resource Files</Filter>
     </EmbeddedResource>
     <EmbeddedResource Include="StudentScheduleForm.resx">
+      <Filter>Resource Files</Filter>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FacultySignUpForm.resx">
       <Filter>Resource Files</Filter>
     </EmbeddedResource>
   </ItemGroup>

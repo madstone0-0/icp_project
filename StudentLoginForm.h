@@ -1,6 +1,6 @@
 #pragma once
 #include "./utils.h"
-// #include "StudentSignUpForm.h"
+#include "StudentSignUpForm].h"
 #include "services/LoginService.h"
 
 namespace icpproject {
@@ -189,6 +189,7 @@ namespace icpproject {
             this->Controls->Add(this->label1);
             this->Name = L"StudentLoginForm";
             this->Text = L"StudentLoginForm";
+            this->Load += gcnew System::EventHandler(this, &StudentLoginForm::StudentLoginForm_Load);
             this->ResumeLayout(false);
             this->PerformLayout();
         }
@@ -234,10 +235,11 @@ namespace icpproject {
         System::Void linkLabel1_LinkClicked(System::Object ^ sender,
                                             System::Windows::Forms::LinkLabelLinkClickedEventArgs ^ e) {
             try {
-                /*auto signUpForm = gcnew StudentSignUpForm(parent);
-                signUpForm->MdiParent = this;
+                auto signUpForm = gcnew StudentSignUpForm(this);
+                signUpForm->MdiParent = (Form ^) parent;
+                signUpForm->StartPosition = FormStartPosition::CenterScreen;
                 signUpForm->Show();
-                this->Close();*/
+                this->Hide();
             } catch (Exception ^ e) {
                 errorMsg(e->Message);
                 MessageBox::Show(e->Message);
@@ -248,6 +250,13 @@ namespace icpproject {
         System::Void button1_Click(System::Object ^ sender, System::EventArgs ^ e) {
             this->Close();
             parent->showChooseForm();
+        }
+
+       private:
+        System::Void StudentLoginForm_Load(System::Object ^ sender, System::EventArgs ^ e) {
+            this->FormBorderStyle = System::Windows::Forms::FormBorderStyle::FixedSingle;
+
+            passwordTB->UseSystemPasswordChar = true;
         }
     };
 }  // namespace icpproject

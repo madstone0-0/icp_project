@@ -106,7 +106,24 @@ WHERE
         ServiceReturn<DataTable ^> GetAll() {
             MySqlDataReader ^ reader = nullptr;
             try {
-                reader = db::Ins()->execute("select * from payments");
+                STR query = R"(
+SELECT
+    pid AS "PID",
+    p.uid AS "UID",
+    fname AS "First Name",
+    lname AS "Last Name",
+    sem AS "Semester",
+    total_amount AS "Total Due",
+    paid_amount AS "Paid Amount",
+    payment_status AS "Status"
+FROM
+    payments p
+INNER JOIN USER u ON
+    u.uid = p.uid
+INNER JOIN student s ON
+    s.uid = p.uid
+)";
+                reader = db::Ins()->execute(query);
                 DataTable ^ dt = gcnew DataTable();
                 dt->Load(reader);
 
@@ -128,6 +145,28 @@ WHERE
 
                 Audit::Ins()->Log("Viewed payments by user", user->UID, "User ID: " + uid);
                 return {true, dt};
+            } finally {
+                if (reader != nullptr) {
+                    reader->Close();
+                }
+            }
+        }
+
+        ServiceReturn<List<Payment> ^> GetOutstandingByUID(long long uid) {
+            MySqlDataReader ^ reader = nullptr;
+            try {
+                reader = db::Ins()->execute(
+                    String::Format("select * from payments where uid = {0} and paid_amount <> total_amount", uid));
+                List<Payment> ^ payments = gcnew List<Payment>(0);
+                while (reader->Read()) {
+                    auto pid = Convert::ToInt64(reader->GetBodyDefinition("pid"));
+                    auto sem = parseStrSemester(reader->GetBodyDefinition("sem"));
+                    auto totalAmount = Convert::ToDouble(reader->GetBodyDefinition("total_amount"));
+                    auto paidAmount = Convert::ToDouble(reader->GetBodyDefinition("paid_amount"));
+                    auto paymentStatus = parseStrPaymentStatus(reader->GetBodyDefinition("payment_status"));
+                    payments->Add(Payment(pid, uid, sem, totalAmount, paidAmount, paymentStatus));
+                }
+                return {true, payments};
             } finally {
                 if (reader != nullptr) {
                     reader->Close();
@@ -165,7 +204,7 @@ WHERE
                 auto sem = parseStrSemester(reader->GetBodyDefinition("sem"));
                 auto totalAmount = Convert::ToDouble(reader->GetBodyDefinition("total_amount"));
                 auto paidAmount = Convert::ToDouble(reader->GetBodyDefinition("paid_amount"));
-                auto paymentStatus = parseStrPaymentStatus(reader->GetBodyDefinition("paymentStatus"));
+                auto paymentStatus = parseStrPaymentStatus(reader->GetBodyDefinition("payment_status"));
                 auto payment = gcnew Payment(pid, uid, sem, totalAmount, paidAmount, paymentStatus);
 
                 Audit::Ins()->Log("Viewed payment", user->UID, "Payment ID: " + pid);

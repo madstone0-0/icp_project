@@ -56,11 +56,15 @@ namespace icpproject {
             // scheduleView
             //
             this->scheduleView->Anchor = static_cast<System::Windows::Forms::AnchorStyles>(
-                ((System::Windows::Forms::AnchorStyles::Top | System::Windows::Forms::AnchorStyles::Left) |
+                (((System::Windows::Forms::AnchorStyles::Top | System::Windows::Forms::AnchorStyles::Bottom) |
+                  System::Windows::Forms::AnchorStyles::Left) |
                  System::Windows::Forms::AnchorStyles::Right));
-            this->scheduleView->Location = System::Drawing::Point(16, 48);
+            this->scheduleView->Font =
+                (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 14.25F, System::Drawing::FontStyle::Regular,
+                                             System::Drawing::GraphicsUnit::Point, static_cast<System::Byte>(0)));
+            this->scheduleView->Location = System::Drawing::Point(8, 8);
             this->scheduleView->Name = L"scheduleView";
-            this->scheduleView->Size = System::Drawing::Size(728, 368);
+            this->scheduleView->Size = System::Drawing::Size(744, 408);
             this->scheduleView->TabIndex = 0;
             //
             // ViewScheduleForm

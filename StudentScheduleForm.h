@@ -60,8 +60,12 @@ namespace icpproject {
             // schedView
             //
             this->schedView->Anchor = static_cast<System::Windows::Forms::AnchorStyles>(
-                ((System::Windows::Forms::AnchorStyles::Top | System::Windows::Forms::AnchorStyles::Left) |
+                (((System::Windows::Forms::AnchorStyles::Top | System::Windows::Forms::AnchorStyles::Bottom) |
+                  System::Windows::Forms::AnchorStyles::Left) |
                  System::Windows::Forms::AnchorStyles::Right));
+            this->schedView->Font =
+                (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 12, System::Drawing::FontStyle::Regular,
+                                             System::Drawing::GraphicsUnit::Point, static_cast<System::Byte>(0)));
             this->schedView->Location = System::Drawing::Point(8, 8);
             this->schedView->Name = L"schedView";
             this->schedView->Size = System::Drawing::Size(704, 352);

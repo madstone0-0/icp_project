@@ -116,6 +116,7 @@ namespace icpproject {
             this->Name = L"ChooseLoginForm";
             this->StartPosition = System::Windows::Forms::FormStartPosition::CenterScreen;
             this->Text = L"ChooseLoginForm";
+            this->Load += gcnew System::EventHandler(this, &ChooseLoginForm::ChooseLoginForm_Load);
             this->ResumeLayout(false);
         }
 #pragma endregion
@@ -144,6 +145,11 @@ namespace icpproject {
             facultyLoginForm->StartPosition = FormStartPosition::CenterScreen;
             facultyLoginForm->Show();
             this->Hide();
+        }
+
+       private:
+        System::Void ChooseLoginForm_Load(System::Object ^ sender, System::EventArgs ^ e) {
+            this->FormBorderStyle = System::Windows::Forms::FormBorderStyle::FixedSingle;
         }
     };
 }  // namespace icpproject

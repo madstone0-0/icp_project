@@ -1,5 +1,7 @@
 #pragma once
 #include "./utils.h"
+#include "services/EnumerationService.h"
+#include "services/StudentActionsService.h"
 
 namespace icpproject {
 
@@ -16,11 +18,9 @@ namespace icpproject {
    public
     ref class StudentProfileForm : public System::Windows::Forms::Form {
        private:
-        STR stuFName;
-        STR stuLName;
-        Major stuMajor;
-        DateTime stuDOB;
-        DateTime stuEnrollDate;
+        IChildHost ^ parent;
+        StudentActionService ^ service;
+        EnumerationService ^ enumService;
 
        private:
         System::Windows::Forms::Label ^ label1;
@@ -33,72 +33,19 @@ namespace icpproject {
 
        private:
         System::Windows::Forms::Label ^ label4;
+
+       private:
+        System::Windows::Forms::Button ^ updateBtn;
+
+       private:
+        System::Windows::Forms::Button ^ uploadBtn;
         PictureH stuPicture;
 
-        STR parseMajorName(Major m) {
-            switch (m) {
-                case Major::CS:
-                    return "Computer Science";
-                    break;
-                case Major::BA:
-                    return "Business Administration";
-                    break;
-                case Major::MA:
-                    return "Mechatronic Engineering";
-                    break;
-                case Major::CE:
-                    return "Computer Engineering";
-                    break;
-                case Major::EE:
-                    return "Electrical Engineering";
-                    break;
-                case Major::EN:
-                    return "Engineering?";
-                    break;
-                case Major::ME:
-                    return "Mechanical Engineering";
-                    break;
-            }
-        }
-
        public:
-        property STR FirstName {
-            STR get() { return stuFName; }
-            void set(STR value) { stuFName = value; }
-        }
-
-        property STR LastName {
-            STR get() { return stuLName; }
-            void set(STR value) { stuLName = value; }
-        }
-
-        property Major MJ {
-            Major get() { return stuMajor; }
-            void set(Major value) { stuMajor = value; }
-        }
-
-        property DateTime DOB {
-            DateTime get() { return stuDOB; }
-            void set(DateTime value) { stuDOB = value; }
-        }
-
-        property DateTime EnrollDate {
-            DateTime get() { return stuEnrollDate; }
-            void set(DateTime value) { stuEnrollDate = value; }
-        }
-
-        property PictureH PictureBytes {
-            PictureH get() { return stuPicture; }
-            void set(PictureH value) { stuPicture = value; }
-        }
-
-        StudentProfileForm(STR fn, STR ln, Major m, DateTime d, DateTime e, PictureH p) {
-            stuFName = fn;
-            stuLName = ln;
-            stuMajor = m;
-            stuDOB = d;
-            stuEnrollDate = e;
-            stuPicture = p;
+        StudentProfileForm(IChildHost ^ parent) {
+            this->parent = parent;
+            service = gcnew StudentActionService(parent->user);
+            enumService = gcnew EnumerationService(parent->user);
             InitializeComponent();
         }
 
@@ -161,6 +108,8 @@ namespace icpproject {
             this->label2 = (gcnew System::Windows::Forms::Label());
             this->label3 = (gcnew System::Windows::Forms::Label());
             this->label4 = (gcnew System::Windows::Forms::Label());
+            this->updateBtn = (gcnew System::Windows::Forms::Button());
+            this->uploadBtn = (gcnew System::Windows::Forms::Button());
             (cli::safe_cast<System::ComponentModel::ISupportInitialize ^>(this->pictureBox1))->BeginInit();
             this->SuspendLayout();
             //
@@ -228,6 +177,7 @@ namespace icpproject {
             //
             this->pictureBox1->Anchor = static_cast<System::Windows::Forms::AnchorStyles>(
                 (System::Windows::Forms::AnchorStyles::Top | System::Windows::Forms::AnchorStyles::Right));
+            this->pictureBox1->BackColor = System::Drawing::SystemColors::AppWorkspace;
             this->pictureBox1->Location = System::Drawing::Point(480, 64);
             this->pictureBox1->Name = L"pictureBox1";
             this->pictureBox1->Size = System::Drawing::Size(240, 232);
@@ -307,11 +257,38 @@ namespace icpproject {
             this->label4->TabIndex = 9;
             this->label4->Text = L"Enroll Date:";
             //
+            // updateBtn
+            //
+            this->updateBtn->Anchor = static_cast<System::Windows::Forms::AnchorStyles>(
+                ((System::Windows::Forms::AnchorStyles::Bottom | System::Windows::Forms::AnchorStyles::Left) |
+                 System::Windows::Forms::AnchorStyles::Right));
+            this->updateBtn->Location = System::Drawing::Point(336, 400);
+            this->updateBtn->Name = L"updateBtn";
+            this->updateBtn->Size = System::Drawing::Size(75, 23);
+            this->updateBtn->TabIndex = 10;
+            this->updateBtn->Text = L"Update";
+            this->updateBtn->UseVisualStyleBackColor = true;
+            this->updateBtn->Click += gcnew System::EventHandler(this, &StudentProfileForm::updateBtn_Click);
+            //
+            // uploadBtn
+            //
+            this->uploadBtn->Anchor = static_cast<System::Windows::Forms::AnchorStyles>(
+                (System::Windows::Forms::AnchorStyles::Top | System::Windows::Forms::AnchorStyles::Right));
+            this->uploadBtn->Location = System::Drawing::Point(568, 312);
+            this->uploadBtn->Name = L"uploadBtn";
+            this->uploadBtn->Size = System::Drawing::Size(75, 23);
+            this->uploadBtn->TabIndex = 11;
+            this->uploadBtn->Text = L"Upload";
+            this->uploadBtn->UseVisualStyleBackColor = true;
+            this->uploadBtn->Click += gcnew System::EventHandler(this, &StudentProfileForm::uploadBtn_Click);
+            //
             // StudentProfileForm
             //
             this->AutoScaleDimensions = System::Drawing::SizeF(6, 13);
             this->AutoScaleMode = System::Windows::Forms::AutoScaleMode::Font;
             this->ClientSize = System::Drawing::Size(748, 458);
+            this->Controls->Add(this->uploadBtn);
+            this->Controls->Add(this->updateBtn);
             this->Controls->Add(this->label4);
             this->Controls->Add(this->label3);
             this->Controls->Add(this->label2);
@@ -323,7 +300,7 @@ namespace icpproject {
             this->Controls->Add(this->stuMajorLabel);
             this->Controls->Add(this->stuNameLabel);
             this->Name = L"StudentProfileForm";
-            this->Text = L"StudentProfileForm";
+            this->Text = L"    ";
             this->Load += gcnew System::EventHandler(this, &StudentProfileForm::StudentProfileForm_Load);
             (cli::safe_cast<System::ComponentModel::ISupportInitialize ^>(this->pictureBox1))->EndInit();
             this->ResumeLayout(false);
@@ -333,12 +310,76 @@ namespace icpproject {
        private:
         System::Void StudentProfileForm_Load(System::Object ^ sender, System::EventArgs ^ e) {
             try {
+                auto student = enumService->GetStudentById(parent->user->UID).data;
+                auto stuFName = student->fname;
+                auto stuLName = student->lname;
+                auto stuMajor = student->major;
+                auto stuDOB = Convert::ToDateTime(student->dob);
+                auto stuEnrollDate = Convert::ToDateTime(student->enrollDate);
+                auto stuPicture = student->picture;
+
                 pictureBox1->SizeMode = PictureBoxSizeMode::StretchImage;
                 stuNameLabel->Text = stuFName + " " + stuLName;
-                stuMajorLabel->Text = parseMajorName(stuMajor);
+                stuMajorLabel->Text = parseMajor(stuMajor, true);
                 stuDOBLabel->Text = stuDOB.ToString("D");
                 stuEnrollLabel->Text = stuEnrollDate.ToString("D");
-                pictureBox1->Image = Image::FromStream(gcnew IO::MemoryStream(stuPicture));
+                if (stuPicture != nullptr && stuPicture->Length > 0) {
+                    pictureBox1->Image = Image::FromStream(gcnew System::IO::MemoryStream(stuPicture));
+                }
+            } catch (Exception ^ e) {
+                errorMsg(e->Message);
+                MessageBox::Show(e->Message);
+            }
+        }
+
+       private:
+        System::Void uploadBtn_Click(System::Object ^ sender, System::EventArgs ^ e) {
+            try {
+                pictureBox1->SizeMode = PictureBoxSizeMode::StretchImage;
+                auto fileDiag = gcnew OpenFileDialog();
+                fileDiag->InitialDirectory = "c:\\";
+                fileDiag->Filter = "PNG Files (*.png)|*.png|JPG Files (*.jpg)|*.jpg|All Files (*.*)|*.*";
+                fileDiag->FilterIndex = 1;
+                fileDiag->RestoreDirectory = true;
+                if (fileDiag->ShowDialog() == System::Windows::Forms::DialogResult::OK) {
+                    auto filePath = fileDiag->FileName;
+                    pictureBox1->ImageLocation = filePath;
+                }
+            } catch (Exception ^ e) {
+                errorMsg(e->Message);
+                MessageBox::Show(e->Message);
+            }
+        }
+
+       private:
+        System::Void updateBtn_Click(System::Object ^ sender, System::EventArgs ^ e) {
+            try {
+                cli::array<unsigned char> ^ buff;
+                try {
+                    auto fs = gcnew System::IO::FileStream(pictureBox1->ImageLocation, IO::FileMode::Open,
+                                                           IO::FileAccess::Read);
+                    auto binReader = gcnew IO::BinaryReader(fs);
+                    buff = binReader->ReadBytes(fs->Length);
+                } catch (Exception ^ e) {
+                    errorMsg(e->Message, "StudentUpdate");
+                    throw e;
+                }
+                auto student = enumService->GetStudentById(parent->user->UID).data;
+                auto stuFName = student->fname;
+                auto stuLName = student->lname;
+                auto stuMajor = student->major;
+                auto stuDOB = Convert::ToDateTime(student->dob);
+                auto stuEnrollDate = Convert::ToDateTime(student->enrollDate);
+                auto stuPicture = student->picture;
+
+                auto res = service->UpdateProfile(Student(parent->user->UID, stuFName, stuLName, student->email,
+                                                          formatDateTimeAsMySQLDate(stuDOB), buff, stuMajor,
+                                                          formatDateTimeAsMySQLDate(stuEnrollDate)));
+                if (!res.status) {
+                    MessageBox::Show("Failed to update profile");
+                    return;
+                }
+                MessageBox::Show(res.data);
             } catch (Exception ^ e) {
                 errorMsg(e->Message);
                 MessageBox::Show(e->Message);

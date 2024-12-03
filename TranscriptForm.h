@@ -257,7 +257,7 @@ namespace icpproject {
                     cGPA += gradeToCredits(item.grade) * item.credits;
                 }
                 cGPA /= count;
-                cgpaLab->Text = Convert::ToString(cGPA);
+                cgpaLab->Text = Convert::ToString(Math::Round(cGPA, 2, MidpointRounding::AwayFromZero));
                 sem1Trans->Text = "";
                 sem2Trans->Text = "";
 

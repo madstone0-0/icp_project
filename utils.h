@@ -28,7 +28,7 @@ public value struct ServiceReturn {
     T data;
 };
 
-enum class Major { CS, BA, EN, ME, EE, CE, MA };
+enum class Major { CS, BA, EN, ME, EE, CE, MA, MI };
 
 enum class Department { CS, HM, EN, BA };
 
@@ -74,25 +74,39 @@ inline Department parseStrDept(STR dept) {
     if (dept == "BA") return Department::BA;
 }
 
-inline STR parseMajor(const Major& major) {
+inline STR parseMajor(Major major, bool pretty = false) {
     switch (major) {
         case Major::CS:
+            if (pretty) return "Computer Science";
             return "CS";
             break;
         case Major::BA:
+            if (pretty) return "Business Administration";
             return "BA";
             break;
         case Major::MA:
+            if (pretty) return "Mechatronic Engineering";
             return "MA";
             break;
         case Major::CE:
+            if (pretty) return "Computer Engineering";
             return "CE";
             break;
+        case Major::ME:
+            if (pretty) return "Mechanical Engineering";
+            return "ME";
+            break;
         case Major::EE:
+            if (pretty) return "Electrical Engineering";
             return "EE";
             break;
         case Major::EN:
+            if (pretty) return "Economics";
             return "EN";
+            break;
+        case Major::MI:
+            if (pretty) return "Management Information Systems";
+            return "MI";
             break;
     }
 }
@@ -104,6 +118,8 @@ inline Major parseStrMajor(STR major) {
     if (major == "CA") return Major::CE;
     if (major == "EE") return Major::EE;
     if (major == "EN") return Major::EN;
+    if (major == "ME") return Major::ME;
+    if (major == "MI") return Major::MI;
 }
 
 inline STR parseSemester(Semester sem) {
@@ -497,6 +513,8 @@ value struct Course {
     }
 };
 
+inline STR formatDateTimeAsMySQLDate(DateTime dt) { return dt.ToString("yyyy-MM-dd"); }
+
 inline STR formatDateTimeAsMySQLTime(DateTime dt) { return dt.ToString("HH:mm:ss"); }
 
 inline STR toNETString(const std::string& str) { return gcnew String(str.c_str()); }
@@ -508,6 +526,18 @@ inline bool validateRegexes(STR str, List<RegularExpressions::Regex ^> ^ regexes
         if (!re->IsMatch(str)) return false;
     }
     return true;
+}
+
+inline bool validateEmail(STR email) {
+    List<Regex ^> ^ regexes = gcnew List<Regex ^>(0);
+    regexes->Add(gcnew Regex("^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$"));
+    return validateRegexes(email, regexes);
+}
+
+inline bool validatePassword(STR password) {
+    List<Regex ^> ^ regexes = gcnew List<Regex ^>(0);
+    regexes->Add(gcnew Regex("^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[^\\da-zA-Z]).{8,}$"));
+    return validateRegexes(password, regexes);
 }
 
 inline STR getHash(STR password) {

@@ -35,6 +35,17 @@ namespace icpproject {
         STR picturePath;
         Major major;
         STR enrollDate;
+
+        SignupStudent(STR f, STR l, STR e, STR p, STR d, STR pic, Major m, STR en) {
+            fname = f;
+            lname = l;
+            email = e;
+            password = p;
+            dob = d;
+            picturePath = pic;
+            major = m;
+            enrollDate = en;
+        }
     };
 
    public
@@ -45,6 +56,15 @@ namespace icpproject {
         STR password;
         STR appDate;
         Department dept;
+
+        SignupFaculty(STR f, STR l, STR e, STR p, STR a, Department d) {
+            fname = f;
+            lname = l;
+            email = e;
+            password = p;
+            appDate = a;
+            dept = d;
+        }
     };
 
    public

@@ -70,6 +70,70 @@ WHERE
             }
         }
 
+        ServiceReturn<STR> UpdateProfile(Student student) {
+            MySqlDataReader ^ reader = nullptr;
+            try {
+                db::Ins()->beginTransaction();
+
+                STR query = R"(
+UPDATE
+    user
+SET
+    fname = @fname
+,
+    lname = @lname
+WHERE
+    uid = @uid
+)";
+                ParamsH params = gcnew Params(0);
+                params->Add("@fname", student.fname);
+                params->Add("@lname", student.lname);
+                params->Add("@uid", student.uid);
+
+                try {
+                    db::Ins()->executeNoRet(query, params);
+                } catch (Exception ^ e) {
+                    db::Ins()->rollback();
+                    errorMsg(e->Message);
+                    throw e;
+                }
+                query = R"(
+UPDATE
+    student
+SET
+    major = @major
+,
+    dob = @dob
+,
+    picture = @pic
+WHERE
+    uid = @uid
+)";
+
+                params->Clear();
+                params->Add("@major", parseMajor(student.major));
+                params->Add("@dob", student.dob);
+                params->Add("@uid", student.uid);
+                params->Add("@pic", student.picture);
+
+                try {
+                    db::Ins()->executeNoRet(query, params);
+                } catch (Exception ^ e) {
+                    db::Ins()->rollback();
+                    errorMsg(e->Message);
+                    throw e;
+                }
+
+                Audit::Ins()->Log("Updated profile", user->UID, "Student ID: " + student.uid);
+                db::Ins()->commit();
+                return {true, "Profile updated"};
+            } finally {
+                if (reader != nullptr) {
+                    reader->Close();
+                }
+            }
+        }
+
         ServiceReturn<List<TranscriptItem> ^> GetTranscript() {
             MySqlDataReader ^ reader = nullptr;
             try {

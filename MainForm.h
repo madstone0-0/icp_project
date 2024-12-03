@@ -8,6 +8,7 @@
 #include "EnumerationForm.h"
 #include "FacultyCoursesForm.h"
 #include "FacultyProfileForm.h"
+#include "FeesForm.h"
 #include "GenerateTranscriptForm.h"
 #include "IssueBillsForm.h"
 #include "ManagePrereqsForm.h"
@@ -452,7 +453,7 @@ namespace icpproject {
             // profileToolStripMenuItem
             //
             this->profileToolStripMenuItem->Name = L"profileToolStripMenuItem";
-            this->profileToolStripMenuItem->Size = System::Drawing::Size(126, 22);
+            this->profileToolStripMenuItem->Size = System::Drawing::Size(180, 22);
             this->profileToolStripMenuItem->Text = L"Profile";
             this->profileToolStripMenuItem->Click +=
                 gcnew System::EventHandler(this, &MainForm::profileToolStripMenuItem_Click);
@@ -460,7 +461,7 @@ namespace icpproject {
             // transcriptToolStripMenuItem
             //
             this->transcriptToolStripMenuItem->Name = L"transcriptToolStripMenuItem";
-            this->transcriptToolStripMenuItem->Size = System::Drawing::Size(126, 22);
+            this->transcriptToolStripMenuItem->Size = System::Drawing::Size(180, 22);
             this->transcriptToolStripMenuItem->Text = L"Transcript";
             this->transcriptToolStripMenuItem->Click +=
                 gcnew System::EventHandler(this, &MainForm::transcriptToolStripMenuItem_Click);
@@ -472,7 +473,7 @@ namespace icpproject {
                                                                              this->enrollInCourseToolStripMenuItem,
                                                                              this->viewScheduleToolStripMenuItem1});
             this->courseToolStripMenuItem->Name = L"courseToolStripMenuItem";
-            this->courseToolStripMenuItem->Size = System::Drawing::Size(126, 22);
+            this->courseToolStripMenuItem->Size = System::Drawing::Size(180, 22);
             this->courseToolStripMenuItem->Text = L"Course";
             //
             // viewEnrolledCoursesToolStripMenuItem
@@ -502,8 +503,10 @@ namespace icpproject {
             // feesToolStripMenuItem
             //
             this->feesToolStripMenuItem->Name = L"feesToolStripMenuItem";
-            this->feesToolStripMenuItem->Size = System::Drawing::Size(126, 22);
+            this->feesToolStripMenuItem->Size = System::Drawing::Size(180, 22);
             this->feesToolStripMenuItem->Text = L"Fees";
+            this->feesToolStripMenuItem->Click +=
+                gcnew System::EventHandler(this, &MainForm::feesToolStripMenuItem_Click);
             //
             // facultyToolStripMenuItem
             //
@@ -517,7 +520,7 @@ namespace icpproject {
             // profileToolStripMenuItem1
             //
             this->profileToolStripMenuItem1->Name = L"profileToolStripMenuItem1";
-            this->profileToolStripMenuItem1->Size = System::Drawing::Size(180, 22);
+            this->profileToolStripMenuItem1->Size = System::Drawing::Size(162, 22);
             this->profileToolStripMenuItem1->Text = L"Profile";
             this->profileToolStripMenuItem1->Click +=
                 gcnew System::EventHandler(this, &MainForm::profileToolStripMenuItem1_Click);
@@ -525,7 +528,7 @@ namespace icpproject {
             // coursesToolStripMenuItem1
             //
             this->coursesToolStripMenuItem1->Name = L"coursesToolStripMenuItem1";
-            this->coursesToolStripMenuItem1->Size = System::Drawing::Size(180, 22);
+            this->coursesToolStripMenuItem1->Size = System::Drawing::Size(162, 22);
             this->coursesToolStripMenuItem1->Text = L"Manage Courses";
             this->coursesToolStripMenuItem1->Click +=
                 gcnew System::EventHandler(this, &MainForm::coursesToolStripMenuItem1_Click);
@@ -725,16 +728,7 @@ namespace icpproject {
                 if (student == nullptr) {
                     throw gcnew Exception("User is not a student");
                 }
-                auto fname = student->FirstName;
-                auto lname = student->LastName;
-                auto email = student->Email;
-                auto dob = Convert::ToDateTime(student->dob);
-                auto major = student->major;
-                auto enrollDate = Convert::ToDateTime(student->enrollDate);
-                auto picture = student->picture;
-
-                StudentProfileForm ^ profileForm =
-                    gcnew StudentProfileForm(fname, lname, major, enrollDate, dob, picture);
+                StudentProfileForm ^ profileForm = gcnew StudentProfileForm(this);
                 profileForm->MdiParent = this;
                 profileForm->StartPosition = FormStartPosition::CenterScreen;
                 profileForm->Show();
@@ -900,7 +894,8 @@ namespace icpproject {
         System::Void paymentsToolStripMenuItem_Click(System::Object ^ sender, System::EventArgs ^ e) {
             try {
                 auto paymentsService = gcnew PaymentsService(user);
-                auto payments = paymentsService->GetAll();
+                auto payRes = paymentsService->GetAll();
+                auto payments = payRes.data;
                 auto enumForm = gcnew EnumerationForm("Payments", payments);
                 enumForm->MdiParent = this;
                 enumForm->StartPosition = FormStartPosition::CenterScreen;
@@ -971,6 +966,19 @@ namespace icpproject {
                 manageCoursesForm->MdiParent = this;
                 manageCoursesForm->StartPosition = FormStartPosition::CenterScreen;
                 manageCoursesForm->Show();
+            } catch (Exception ^ e) {
+                errorMsg(e->Message);
+                MessageBox::Show(e->Message);
+            }
+        }
+
+       private:
+        System::Void feesToolStripMenuItem_Click(System::Object ^ sender, System::EventArgs ^ e) {
+            try {
+                auto feesForm = gcnew FeesForm(this);
+                feesForm->MdiParent = this;
+                feesForm->StartPosition = FormStartPosition::CenterScreen;
+                feesForm->Show();
             } catch (Exception ^ e) {
                 errorMsg(e->Message);
                 MessageBox::Show(e->Message);

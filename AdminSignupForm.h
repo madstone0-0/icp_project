@@ -253,6 +253,7 @@ namespace icpproject {
             this->Controls->Add(this->label1);
             this->Name = L"AdminSignUpForm";
             this->Text = L"AdminSignUpForm";
+            this->Load += gcnew System::EventHandler(this, &AdminSignUpForm::AdminSignUpForm_Load);
             this->ResumeLayout(false);
             this->PerformLayout();
         }
@@ -294,6 +295,18 @@ namespace icpproject {
                     isValid = false;
                 }
 
+                if (!validateEmail(em)) {
+                    MessageBox::Show("Invalid email");
+                    isValid = false;
+                }
+
+                if (!validatePassword(pass)) {
+                    MessageBox::Show(
+                        "Password must be at least 8 characters long, including one uppercase letter, one lowercase "
+                        "letter, one digit, and one special character.");
+                    isValid = false;
+                }
+
                 if (isValid) {
                     auto res = adminService->SignUp(SignupUser{fname, lname, em, pass});
                     System::Console::WriteLine(String::Format(
@@ -317,6 +330,11 @@ namespace icpproject {
                                             System::Windows::Forms::LinkLabelLinkClickedEventArgs ^ e) {
             parentForm->Show();
             this->Close();
+        }
+
+       private:
+        System::Void AdminSignUpForm_Load(System::Object ^ sender, System::EventArgs ^ e) {
+            passwordTB->UseSystemPasswordChar = true;
         }
     };
 }  // namespace icpproject
