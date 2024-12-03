@@ -256,7 +256,11 @@ namespace icpproject {
                     semList->Add(item);
                     cGPA += gradeToCredits(item.grade) * item.credits;
                 }
-                cGPA /= count;
+                if (count == 0 || cGPA == 0) {
+                    cGPA = 0;
+                } else {
+                    cGPA /= count;
+                }
                 cgpaLab->Text = Convert::ToString(Math::Round(cGPA, 2, MidpointRounding::AwayFromZero));
                 sem1Trans->Text = "";
                 sem2Trans->Text = "";

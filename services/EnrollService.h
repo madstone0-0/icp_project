@@ -234,7 +234,7 @@ INNER JOIN USER u ON
     e.uid = u.uid
 INNER JOIN student s ON
     s.uid = e.uid
-WHERE e.cid = @cid AND sem = @sem
+WHERE e.cid = @cid
 )";
                 ParamsH params = gcnew Params(2);
                 params->Add("@cid", cid);
@@ -258,8 +258,9 @@ WHERE e.cid = @cid AND sem = @sem
                 STR query = R"(
 SELECT
     eid AS EID,
-    uid AS UID,
-    e.cid AS CID,
+    e.uid AS UID,
+    u.fname,
+    u.lname,
     cname AS Course_Name,
     credits AS Credits,
     e.sem AS Semester,
@@ -268,6 +269,8 @@ FROM
     enrollment e
 INNER JOIN course c ON
     e.cid = c.cid
+INNER JOIN `user` u ON
+    e.uid = u.uid
 )";
                 reader = db::Ins()->execute(query);
                 DataTable ^ dt = gcnew DataTable();

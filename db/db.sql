@@ -130,7 +130,7 @@ cid int NOT null,
 starttime time not null,
 endtime time not null,
 day enum ("Monday", "Tuesday", "Wednesday", "Thursday", "Friday"),
-foreign key (cid) references course (cid)
+foreign key (cid) references course (cid) ON DELETE cascade
 );
 
 CREATE TABLE audit_log (
@@ -147,7 +147,7 @@ CREATE INDEX idx_course_sem ON course (sem);
 
 CREATE INDEX idx_enrollment_uid ON enrollment (uid);
 CREATE INDEX idx_enrollment_cid ON enrollment (cid);
-CREATE INDEX idx_enrollment_sem ON enrollmen 09t (sem);
+CREATE INDEX idx_enrollment_sem ON enrollment (sem);
 
 CREATE INDEX idx_schedule_cid ON schedule (cid);
 CREATE INDEX idx_schedule_day ON schedule (day);
@@ -179,115 +179,408 @@ END;//
 
 DELIMITER ;
 
--- User table
-INSERT INTO user (fname, lname, email, password)
-VALUES
-('Madiba', 'Hudson-Quansah', 'mhquansah@gmail.com', '1411241789187772614611123143241611482201152118099233');
+-- Initial Database population comment out to just have DDL
 
+-- User table
+INSERT
+    INTO
+    USER (
+        fname,
+        lname,
+        email,
+        password
+    )
+VALUES
+(
+    'Madiba',
+    'Hudson-Quansah',
+    'mhquansah@gmail.com',
+    '1411241789187772614611123143241611482201152118099233'
+);
 -- Admin table
-INSERT INTO admin (uid)
+INSERT
+    INTO
+    admin (uid)
 VALUES (1);
 
-INSERT INTO USER (fname, lname ,email, password)
+INSERT
+    INTO
+    USER (
+        fname,
+        lname ,
+        email,
+        password
+    )
 VALUES
-('Madiba', 'Hudson-Quansah', 'mfac@gmail.com', '1411241789187772614611123143241611482201152118099233'),
-('Madiba', 'Hudson-Quansah', 'mstu@gmail.com', '1411241789187772614611123143241611482201152118099233');
-INSERT INTO faculty (uid, appdate, dept) VALUES
-(2,"2024-12-02", "CS");
-INSERT INTO student(uid, dob, major, enrolldate) 
+(
+    'Madiba',
+    'Hudson-Quansah',
+    'mfac@gmail.com',
+    '1411241789187772614611123143241611482201152118099233'
+),
+(
+    'Madiba',
+    'Hudson-Quansah',
+    'mstu@gmail.com',
+    '1411241789187772614611123143241611482201152118099233'
+);
+
+INSERT
+    INTO
+    faculty (
+        uid,
+        appdate,
+        dept
+    )
 VALUES
-(3, "2004-12-02", "CS", "2024-12-02");
+(
+    2,
+    "2024-12-02",
+    "CS"
+);
 
--- Add 30 students
-INSERT INTO user (fname, lname, email, password)
-SELECT CONCAT('Student', FLOOR(RAND() * 10000)),
-       'LastName',
-       CONCAT('student', FLOOR(RAND() * 10000), '@example.com'),
-       '1411241789187772614611123143241611482201152118099233'
-FROM (SELECT 1 UNION ALL SELECT 2 UNION ALL SELECT 3 UNION ALL SELECT 4 UNION ALL SELECT 5 UNION ALL SELECT 6 UNION ALL SELECT 7 UNION ALL SELECT 8 UNION ALL SELECT 9 UNION ALL SELECT 10) T1,
-     (SELECT 1 UNION ALL SELECT 2 UNION ALL SELECT 3) T2
-LIMIT 30;
+INSERT
+    INTO
+    student(
+        uid,
+        dob,
+        major,
+        enrolldate
+    )
+VALUES
+(
+    3,
+    "2004-12-02",
+    "CS",
+    "2024-12-02"
+);
+-- Realistic first names arrays for diversity
+SET
+@first_names_male = 'James,John,Robert,Michael,William,David,Joseph,Thomas,Charles,Christopher,Daniel,Matthew,Anthony,Donald,Mark,Paul,Steven,Andrew,Kenneth,George,Joshua,Kevin,Brian,Edward,Ronald,Timothy,Jason,Jeffrey,Ryan,Gary,Nicholas,Eric,Stephen,Jonathan,Larry,Justin,Scott,Brandon,Frank,Benjamin,Gregory,Samuel,Raymond,Patrick,Alexander,Jack,Dennis,Jerry,Tyler,Aaron,Henry,Douglas,Jose,Peter,Adam,Nathan,Harold,Kyle,Carl,Jeremy,Keith,Roger,Gerald,Ethan,Arthur,Terry,Christian,Sean,Tyler,Ralph,Dean,Victor,Todd,Jesse,Richard,Shawn,Philip,Chris,Howard,Clarence,Dylan,Nicholas,Leonard,Craig,Phillip,Russell,Zachary,Troy,Cameron,Joel,Shane';
 
-INSERT INTO student (uid, dob, picture, major, enrolldate)
-SELECT uid,
+SET
+@first_names_female = 'Mary,Elizabeth,Jennifer,Linda,Patricia,Barbara,Margaret,Susan,Alice,Dorothy,Lisa,Nancy,Karen,Betty,Helen,Sandra,Donna,Carol,Ruth,Sharon,Michelle,Laura,Sarah,Kimberly,Deborah,Jessica,Shirley,Cynthia,Angela,Melissa,Brenda,Amy,Anna,Rebecca,Katherine,Nicole,Pamela,Christine,Debra,Rachel,Carolyn,Frances,Maria,Heather,Diane,Julie,Joyce,Emma,Evelyn,Martha,Joan,Kelly,Christina,Lauren,Frances,Judy,Paula,Marilyn,Stephanie,Katherine,Elizabeth';
+
+SET
+@last_names = 'Smith,Johnson,Williams,Brown,Jones,Miller,Davis,Garcia,Rodriguez,Wilson,Martinez,Anderson,Taylor,Thomas,Hernandez,Moore,Martin,Jackson,Thompson,White,Lopez,Lee,Harris,Clark,Lewis,Robinson,Walker,Perez,Hall,Young,Allen,Sanchez,Wright,King,Scott,Green,Baker,Adams,Nelson,Hill,Ramirez,Campbell,Mitchell,Roberts,Carter,Phillips,Evans,Turner,Diaz,Parker,Cruz,Edwards,Collins,Reyes,Stewart,Morris,Morales,Murphy,Cook,Rogers,Gutierrez,Ortiz,Gomez,Murray,Freeman,Wells,Webb,Simpson,Stevens,Tucker,Porter,Hunter,Hicks,Crawford,Henry,Boyd,Mason,Morales,Kennedy,Warren,Dixon,Ramos,Reyes,Burns,Gordon,Shaw,Holmes,Rice,Robertson,Hunt,Black,Daniels,Palmer,Mills,Nichols,Grant,Knight,Ferguson,Rose,Stone,Hawkins,Dunn,Perkins,Hudson,Spencer,Gardner,Stephens,Payne,Pierce,Berry,Matthews,Arnold,Wagner,Willis,Ray,Watkins,Olson,Carroll,Duncan,Snyder,Hart,Cunningham,Bradley,Lane,Andrews,Ruiz,Harper,Fox,Riley,Armstrong,Carpenter,Weaver,Greene,Lawrence,Elliott,Chavez,Sims,Austin,Peters,Kelley,Franklin,Lawson,Fields,Gutierrez,Ryan,Schmidt,Carr,Vasquez,Castillo,Wheeler,Chapman,Oliver,Montgomery,Richards,Williamson,Johnston,Banks,Meyer,Bishop,Mccoy,Howell,Alvarez,Morrison,Hansen,Fernandez,Garza,Harvey,Little,Burton,Stanley,Nguyen,George,Jacobs,Reid,Kim,Fuller,Lynch,Dean,Gilbert,Garrett,Romero,Welch,Larson,Frazier,Burke,Hanson,Day,Mendoza,Moreno,Bowman,Medina,Fowler,Brewer,Hoffman,Carlson,Silva,Pearson,Holland,Douglas,Fleming,Jensen,Vargas,Byrd,Davidson,Hopkins,May,Terry,Herrera,Wade,Soto,Walters,Curtis,Neal,Caldwell,Lowe,Jennings,Barnett,Graves,Jimenez,Horton,Shelton,Barrett,Obrien,Castro,Sutton,Gregory,Mckinney,Lucas,Miles,Craig,Rodriquez,Chambers,Holt,Lambert,Fletcher,Watts,Bates,Hale,Rhodes,Pena,Beck,Newman,Haynes,Mcdaniel,Mendez,Bush,Vaughn,Parks,Dawson,Santiago,Norris,Hardy,Love,Steele,Curry,Yates,Wiley,Rowe,Sullivan,Nash,Crosby,Calderon,Joyce,Noble,Houser,Silva';
+DELIMITER //
+CREATE PROCEDURE generate_realistic_users()
+BEGIN
+    DECLARE i INT DEFAULT 0;
+    DECLARE fname VARCHAR(50);
+    DECLARE lname VARCHAR(50);
+    DECLARE male_name_count INT;
+    DECLARE female_name_count INT;
+    DECLARE last_name_count INT;
+    
+    -- Count total names
+    SET male_name_count = LENGTH(@first_names_male) - LENGTH(REPLACE(@first_names_male, ',', '')) + 1;
+    SET female_name_count = LENGTH(@first_names_female) - LENGTH(REPLACE(@first_names_female, ',', '')) + 1;
+    SET last_name_count = LENGTH(@last_names) - LENGTH(REPLACE(@last_names, ',', '')) + 1;
+    
+    DELETE FROM enrollment WHERE 1=1;
+    DELETE FROM student WHERE uid > 3;
+    DELETE FROM user WHERE uid > 3;
+    
+    WHILE i < 10 DO
+        IF RAND() < 0.5 THEN
+            SET fname = SUBSTRING_INDEX(SUBSTRING_INDEX(@first_names_male, ',', 1 + FLOOR(RAND() * male_name_count)), ',', -1);
+        ELSE
+            SET fname = SUBSTRING_INDEX(SUBSTRING_INDEX(@first_names_female, ',', 1 + FLOOR(RAND() * female_name_count)), ',', -1);
+        END IF;
+        
+        SET lname = SUBSTRING_INDEX(SUBSTRING_INDEX(@last_names, ',', 1 + FLOOR(RAND() * last_name_count)), ',', -1);
+        
+        INSERT INTO user (fname, lname, email, password)
+        VALUES (
+            fname,
+            lname,
+            CONCAT(LOWER(fname), LOWER(lname), FLOOR(RAND() * 1000), '@example.com'),
+            '1411241789187772614611123143241611482201152118099233'
+        );
+        
+        SET i = i + 1;
+    END WHILE;
+END //
+
+CREATE PROCEDURE generate_realistic_faculty()
+BEGIN
+    DECLARE i INT DEFAULT 0;
+    DECLARE fname VARCHAR(50);
+    DECLARE lname VARCHAR(50);
+    DECLARE male_name_count INT;
+    DECLARE female_name_count INT;
+    DECLARE last_name_count INT;
+    
+    -- Count total names
+    SET male_name_count = LENGTH(@first_names_male) - LENGTH(REPLACE(@first_names_male, ',', '')) + 1;
+    SET female_name_count = LENGTH(@first_names_female) - LENGTH(REPLACE(@first_names_female, ',', '')) + 1;
+    SET last_name_count = LENGTH(@last_names) - LENGTH(REPLACE(@last_names, ',', '')) + 1;
+    
+    DELETE FROM course_faculty WHERE 1=1;
+    DELETE FROM faculty WHERE uid > 31;
+    DELETE FROM user WHERE uid > 31;
+    
+    WHILE i < 10 DO
+        IF RAND() < 0.5 THEN
+            SET fname = SUBSTRING_INDEX(SUBSTRING_INDEX(@first_names_male, ',', 1 + FLOOR(RAND() * male_name_count)), ',', -1);
+        ELSE
+            SET fname = SUBSTRING_INDEX(SUBSTRING_INDEX(@first_names_female, ',', 1 + FLOOR(RAND() * female_name_count)), ',', -1);
+        END IF;
+        
+        SET lname = SUBSTRING_INDEX(SUBSTRING_INDEX(@last_names, ',', 1 + FLOOR(RAND() * last_name_count)), ',', -1);
+        
+        INSERT INTO user (fname, lname, email, password)
+        VALUES (
+            fname,
+            lname,
+            CONCAT('prof', LOWER(fname), LOWER(lname), FLOOR(RAND() * 1000), '@university.edu'),
+            '1411241789187772614611123143241611482201152118099233'
+        );
+        
+        SET i = i + 1;
+    END WHILE;
+END //
+DELIMITER ;
+
+-- Call these procedures to generate realistic names
+CALL generate_realistic_users();
+
+CALL generate_realistic_faculty();
+-- After generating users, insert students and faculty as before
+INSERT
+    INTO
+    student (
+        uid,
+        dob,
+        picture,
+        major,
+        enrolldate
+    )
+SELECT
+    uid,
        DATE_ADD('2000-01-01', INTERVAL FLOOR(RAND() * 7300) DAY),
        NULL,
        ELT(FLOOR(1 + (RAND() * 7)), 'CS', 'BA', 'EN', 'ME', 'EE', 'CE', 'MA'),
        DATE_ADD('2020-01-01', INTERVAL FLOOR(RAND() * 1000) DAY)
-FROM user
-WHERE uid > 3;
+FROM
+    USER u
+WHERE
+    uid > 3 AND u.email NOT LIKE "prof%";
 
--- Add 30 faculty members
-INSERT INTO user (fname, lname, email, password)
-SELECT CONCAT('Faculty', FLOOR(RAND() * 10000)),
-       'LastName',
-       CONCAT('faculty', FLOOR(RAND() * 10000), '@example.com'),
-       '1411241789187772614611123143241611482201152118099233'
-FROM (SELECT 1 UNION ALL SELECT 2 UNION ALL SELECT 3 UNION ALL SELECT 4 UNION ALL SELECT 5 UNION ALL SELECT 6 UNION ALL SELECT 7 UNION ALL SELECT 8 UNION ALL SELECT 9 UNION ALL SELECT 10) T1,
-     (SELECT 1 UNION ALL SELECT 2 UNION ALL SELECT 3) T2
-LIMIT 30;
-
-INSERT INTO faculty (uid, appdate, dept)
-SELECT uid,
+INSERT
+    INTO
+    faculty (
+        uid,
+        appdate,
+        dept
+    )
+SELECT
+    uid,
        CURDATE(),
        ELT(FLOOR(1 + (RAND() * 4)), 'CS', 'HM', 'EN', 'BA')
-FROM user
-WHERE uid > 31;
+FROM
+    USER u
+WHERE
+   uid > 11 and u.email LIKE "prof%";
 
--- Add 30 courses
+
 -- Insert 10 courses with random attributes
-INSERT INTO course (cname, credits, sem, capacity)
+INSERT
+    INTO
+    course (
+        cname,
+        credits,
+        sem,
+        capacity
+    )
 VALUES 
-  ('Intro to Programming', 1.0, 'S1', 40),
-  ('Linear Algebra', 1.0, 'S1', 40),
-  ('Database Systems', 1.0, 'S2', 40),
-  ('Marketing Principles', 0.5, 'S1', 30),
-  ('Thermodynamics', 1.0, 'S2', 40),
-  ('Digital Circuits', 0.5, 'S2', 30),
-  ('Project Management', 1.0, 'S1', 40),
-  ('Quantum Physics', 1.0, 'S2', 30),
-  ('Artificial Intelligence', 1.0, 'S1', 40),
-  ('Ethics in Engineering', 0.5, 'S2', 30);
-
+  (
+    'Intro to Programming',
+    1.0,
+    'S1',
+    40
+),
+  (
+    'Linear Algebra',
+    1.0,
+    'S1',
+    40
+),
+  (
+    'Database Systems',
+    1.0,
+    'S2',
+    40
+),
+  (
+    'Marketing Principles',
+    0.5,
+    'S1',
+    30
+),
+  (
+    'Thermodynamics',
+    1.0,
+    'S2',
+    40
+),
+  (
+    'Digital Circuits',
+    0.5,
+    'S2',
+    30
+),
+  (
+    'Project Management',
+    1.0,
+    'S1',
+    40
+),
+  (
+    'Quantum Physics',
+    1.0,
+    'S2',
+    30
+),
+  (
+    'Artificial Intelligence',
+    1.0,
+    'S1',
+    40
+),
+  (
+    'Ethics in Engineering',
+    0.5,
+    'S2',
+    30
+);
 -- Assign faculty to courses
-INSERT INTO course_faculty (uid, cid)
-SELECT F.uid, C.cid
-FROM faculty F
-CROSS JOIN course C
-WHERE F.uid > 31
-LIMIT 30;
+DELIMITER //
+
+CREATE PROCEDURE assign_faculty_to_courses()
+BEGIN
+    DECLARE done INT DEFAULT FALSE;
+    DECLARE faculty_id INT;
+    DECLARE course_id INT;
+    DECLARE course_dept VARCHAR(50);
+    DECLARE sem_required ENUM('S1', 'S2');
+    DECLARE cur CURSOR FOR
+        SELECT cid, sem, SUBSTRING_INDEX(cname, ' ', 1) AS dept
+        FROM course;
+    DECLARE CONTINUE HANDLER FOR NOT FOUND SET done = TRUE;
+
+    -- Temporary table to track faculty assignments
+DROP TABLE IF EXISTS temp_faculty_workload;
+    CREATE TEMPORARY TABLE temp_faculty_workload (
+        uid INT PRIMARY KEY,
+        dept VARCHAR(10),
+        workload INT DEFAULT 0
+    );
+
+    -- Populate faculty workload
+    INSERT INTO temp_faculty_workload (uid, dept)
+    SELECT uid, dept FROM faculty;
+
+    OPEN cur;
+
+    course_loop: LOOP
+        FETCH cur INTO course_id, sem_required, course_dept;
+        IF done THEN
+            LEAVE course_loop;
+        END IF;
+
+        -- Assign faculty to course
+        SET faculty_id = (
+            SELECT uid
+            FROM temp_faculty_workload
+            ORDER BY workload ASC, RAND()
+            LIMIT 1
+        );
+
+        -- If a faculty member is found, assign the course
+        IF faculty_id IS NOT NULL THEN
+            INSERT INTO course_faculty (uid, cid)
+            VALUES (faculty_id, course_id);
+
+            -- Update workload
+            UPDATE temp_faculty_workload
+            SET workload = workload + 1
+            WHERE uid = faculty_id;
+        END IF;
+    END LOOP;
+
+    CLOSE cur;
+
+    -- Drop temporary table
+    DROP TEMPORARY TABLE temp_faculty_workload;
+END //
+
+DELIMITER ;
+CALL assign_faculty_to_courses();
+
 
 -- Enroll students in courses
-INSERT INTO enrollment (uid, cid, sem)
-SELECT S.uid, C.cid, ELT(FLOOR(1 + (RAND() * 2)), 'S1', 'S2')
-FROM student S
+INSERT
+    INTO
+    enrollment (
+        uid,
+        cid,
+        sem
+    )
+SELECT
+    S.uid,
+    C.cid,
+    C.sem
+FROM
+    student S
 CROSS JOIN course C
 LIMIT 200;
 
--- Reset schedule table to avoid duplicates
-DELETE FROM schedule;
-
 -- Variables for dynamic scheduling
-SET @start_time = '08:00:00'; -- Start time for the first class
-SET @end_time = '18:00:00'; -- End time for the last class
-SET @current_time = @start_time; -- Initialize current time
-SET @day_index = 1; -- Start with Monday
-SET @max_days = 5; -- Total days in the week (Monday to Friday)
-
+SET
+@start_time = '08:00:00';
+-- Start time for the first class
+SET
+@end_time = '18:00:00';
+-- End time for the last class
+SET
+@current_time = @start_time;
+-- Initialize current time
+SET
+@day_index = 1;
+-- Start with Monday
+SET
+@max_days = 5;
+-- Total days in the week (Monday to Friday)
 -- Loop through courses to assign non-colliding schedules
-INSERT INTO schedule (cid, starttime, endtime, day)
-SELECT C.cid,
+INSERT
+    INTO
+    schedule (
+        cid,
+        starttime,
+        endtime,
+        DAY
+    )
+SELECT
+    C.cid,
        @current_time AS starttime,
        ADDTIME(@current_time, '02:00:00') AS endtime,
-       ELT(@day_index, 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday') AS day
-FROM course C
-WHERE (@current_time := CASE
-         WHEN ADDTIME(@current_time, '02:00:00') >= @end_time THEN '08:00:00'
-         ELSE ADDTIME(@current_time, '02:00:00')
-       END) IS NOT NULL
-AND (@day_index := CASE
-         WHEN ADDTIME(@current_time, '02:00:00') >= @end_time THEN @day_index + 1
-         ELSE @day_index
-       END) <= @max_days;
+       ELT(@day_index, 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday') AS DAY
+FROM
+    course C
+WHERE
+    (
+        @current_time := CASE
+            WHEN ADDTIME(@current_time, '02:00:00') >= @end_time THEN '08:00:00'
+            ELSE ADDTIME(@current_time, '02:00:00')
+        END
+    ) IS NOT NULL
+    AND (
+        @day_index := CASE
+            WHEN ADDTIME(@current_time, '02:00:00') >= @end_time THEN @day_index + 1
+            ELSE @day_index
+        END
+    ) <= @max_days;
 
 
